@@ -73,21 +73,67 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
 @media(max-width:1060px){.main{grid-template-columns:1fr}.preview-panel{position:static}.controls{max-height:none}}
 /* tooltip */
 .tip{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#222;color:#ddd;padding:8px 18px;border-radius:999px;font-size:.78rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:none}
+
+/* v3 — interfaz guiada, táctil y basada en las referencias */
+body{padding:18px;background:
+  radial-gradient(900px 520px at 8% -10%,rgba(255,35,78,.14),transparent 65%),
+  radial-gradient(700px 500px at 100% 15%,rgba(116,72,255,.08),transparent 65%),var(--bg)}
+.header{margin-bottom:16px}.header p{max-width:720px}.brand-kicker{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:3px}
+.workflow{max-width:1320px;margin:0 auto 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.workflow-step{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:13px;background:rgba(24,24,28,.74);color:var(--muted);font-size:.74rem}
+.workflow-step b{display:grid;place-items:center;flex:0 0 24px;height:24px;border-radius:50%;background:#2b2b33;color:#fff}.workflow-step:first-child{border-color:rgba(255,37,78,.45);color:#ddd}.workflow-step:first-child b{background:var(--accent)}
+.main{grid-template-columns:minmax(0,1.16fr) minmax(380px,.84fr)}
+.preview-panel{padding:14px;backdrop-filter:blur(18px);background:rgba(24,24,28,.92)}
+.preview-stage{min-height:490px;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:28px 28px}
+.preview-top h2{color:#e8e8ed;letter-spacing:.09em}.preview-top h2::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#45dc88;box-shadow:0 0 0 4px rgba(69,220,136,.1);margin-right:9px}
+.action-row{flex-wrap:wrap}.btn{min-height:42px}.btn:focus-visible,.pbtn:focus-visible,.mode-btn:focus-visible,.ref-card:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.controls{padding:12px;gap:10px;background:rgba(24,24,28,.92)}
+.quick-title{display:flex;align-items:center;justify-content:space-between;margin:1px 2px 8px}.quick-title h2{font:700 1rem 'Space Grotesk',sans-serif}.quick-title span{font-size:.65rem;color:var(--muted)}
+.reference-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ref-card{position:relative;border:1px solid var(--border);border-radius:13px;background:#111116;overflow:hidden;cursor:pointer;color:#fff;text-align:left;transition:.18s;min-height:112px}
+.ref-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.25)}.ref-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.ref-card img{width:100%;height:74px;object-fit:contain;background:#09090b;display:block;padding:8px}.ref-card span{display:block;padding:7px 8px;font-size:.68rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ref-card small{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.72);padding:2px 5px;border-radius:5px;color:#aaa;font-size:.52rem}
+.ref-help{font-size:.68rem;color:var(--muted);margin-top:9px;display:flex;align-items:center;gap:6px}.ref-help::before{content:'↗';color:var(--accent);font-weight:700}
+.section{padding:13px;border-radius:14px}.section-head{margin-bottom:11px}.section-head::after{content:'AJUSTES';margin-left:auto;font-size:.52rem;letter-spacing:.12em;color:#666;font-weight:700}.section-head:has(input)::after{display:none}
+.guide-chip{display:inline-flex;align-items:center;gap:5px;color:#a8a8b2;background:#19191f;border:1px solid var(--border);border-radius:999px;padding:4px 8px;font-size:.62rem;margin-bottom:10px}
+.select{cursor:pointer}.label b{background:rgba(255,37,78,.1);padding:1px 5px;border-radius:5px}
+input[type=range]{height:7px;background:linear-gradient(90deg,rgba(255,37,78,.34),#333)}input[type=range]::-webkit-slider-thumb{width:18px;height:18px}
+.zoom-tools{display:flex;gap:4px}.zoom-btn{width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#222228;color:#bbb;cursor:pointer;font-weight:700}.zoom-btn:hover{color:#fff;border-color:#555}.mobile-export{display:none}
+@media(max-width:1060px){.main{grid-template-columns:1fr}.preview-panel{position:relative;top:0}.controls{overflow:visible}.preview-stage{min-height:420px}}
+@media(max-width:680px){body{padding:12px 10px 90px}.header h1{font-size:1.55rem}.badge{display:none}.workflow{grid-template-columns:1fr}.workflow-step:not(:first-child){display:none}.preview-panel{padding:10px;border-radius:16px}.preview-stage{min-height:330px}.handles-note{max-width:calc(100% - 24px)}.modes{width:100%;overflow:auto}.mode-btn{flex:1;padding:7px 8px}.action-row .btn{flex:1;font-size:.74rem;padding:8px}.action-row .btn-primary{display:none}.reference-grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.controls{padding:9px}.mobile-export{position:fixed;display:flex;left:10px;right:10px;bottom:10px;z-index:100;background:var(--accent);color:#fff;border:0;border-radius:14px;min-height:52px;align-items:center;justify-content:center;font-weight:800;box-shadow:0 12px 35px rgba(255,37,78,.4)}}
+
+
+/* v3.1 — edición progresiva: una decisión a la vez */
+.studio-nav{position:sticky;top:-12px;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:7px;margin:-1px 0 2px;background:rgba(24,24,28,.96);border:1px solid var(--border);border-radius:13px;backdrop-filter:blur(14px)}
+.studio-tab{border:0;border-radius:9px;background:transparent;color:#777;padding:8px 4px;font-size:.65rem;font-weight:700;cursor:pointer;transition:.16s}.studio-tab:hover{color:#fff;background:#25252c}.studio-tab.active{background:#fff;color:#111;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+.config-panel{display:none;animation:panelIn .2s ease}.config-panel.active{display:block}@keyframes panelIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.panel-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:2px 2px 10px}.panel-intro strong{font:700 1rem 'Space Grotesk',sans-serif}.panel-intro p{font-size:.67rem;color:var(--muted);margin-top:2px}.continue-btn{width:100%;margin-top:10px;border:1px solid rgba(255,37,78,.35);background:rgba(255,37,78,.09);color:#fff;border-radius:11px;padding:10px;font-weight:700;cursor:pointer}.continue-btn:hover{background:var(--accent);border-color:var(--accent)}
+.ref-card img{transition:.2s}.ref-card:hover img{transform:scale(1.04)}
+.output-status{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;color:#8e8e98}.output-status i{width:6px;height:6px;border-radius:50%;background:#45dc88;box-shadow:0 0 0 3px rgba(69,220,136,.1)}
+@media(max-width:680px){.studio-nav{top:-9px;overflow-x:auto;grid-template-columns:repeat(5,minmax(68px,1fr))}.studio-tab{font-size:.6rem}.config-panel[data-panel="teeth"].active{display:block}}
+
 </style>
 </head>
 <body>
 <div class="header">
   <div>
-    <h1><span>BUCLE</span> — Configurador de Boca</h1>
-    <p>Boca + Dientes + Diente único • SVG 100% sólido (sin strokes falsos) • Arrastra las esquinas en el preview. Inspirado en <b style="color:#fff">BOCAS.png</b>, <b style="color:#fff">DIENTES.png</b>, <b style="color:#fff">LIP.png</b></p>
+    <div class="brand-kicker">Laboratorio de formas</div>
+    <h1><span>BUCLE</span> — Creador de bocas</h1>
+    <p>Combina labios y dientes con el lenguaje gráfico de <b style="color:#fff">BOCAS</b>, <b style="color:#fff">DIENTES</b>, <b style="color:#fff">LIP</b> y <b style="color:#fff">ALLTO</b>. Elige un estilo, personalízalo y descárgalo.</p>
   </div>
-  <div class="badge"><b>v2 FIX</b> • clipPath real • sin línea inferior fake • sup+inf</div>
+  <div class="badge"><b>SVG SÓLIDO</b> • listo para editar y exportar</div>
+</div>
+<div class="workflow" aria-label="Pasos para crear">
+  <div class="workflow-step"><b>1</b><span><strong>Elige una referencia</strong><br>Empieza con una forma del repo</span></div>
+  <div class="workflow-step"><b>2</b><span><strong>Personaliza</strong><br>Ajusta boca, dientes y color</span></div>
+  <div class="workflow-step"><b>3</b><span><strong>Exporta</strong><br>Descarga SVG o PNG</span></div>
 </div>
 
 <div class="main">
   <div class="preview-panel">
     <div class="preview-top">
       <h2>PREVIEW INTERACTIVO</h2>
+      <div class="zoom-tools" aria-label="Zoom del lienzo"><button class="zoom-btn" onclick="setPreviewZoom(-.1)" title="Alejar">−</button><button class="zoom-btn" onclick="setPreviewZoom(.1)" title="Acercar">+</button></div>
       <div class="modes">
         <button class="mode-btn active" data-mode="ambos" onclick="setMode('ambos')">AMBOS</button>
         <button class="mode-btn" data-mode="boca" onclick="setMode('boca')">BOCA</button>
@@ -100,17 +146,41 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
       <div class="handles-note">💡 Arrastra esquinas: ancla roja = boca • Rueda = zoom • R = aleatorio • Esc = reset</div>
     </div>
     <div class="action-row">
-      <button class="btn btn-secondary" onclick="randomizeAll()">🎲 Aleatorio</button>
-      <button class="btn btn-secondary" onclick="resetAll()">↺ Reset</button>
-      <button class="btn btn-secondary" onclick="copySVG()">⧉ Copiar SVG</button>
-      <button class="btn btn-primary" style="margin-left:auto" onclick="exportSVG('ambos')">↓ Exportar AMBOS</button>
+      <button class="btn btn-secondary" onclick="randomizeAll()">✦ Sorpréndeme</button>
+      <button class="btn btn-secondary" onclick="resetAll()">↺ Restablecer</button>
+      <button class="btn btn-secondary" onclick="copySVG()">⧉ Copiar</button>
+      <button class="btn btn-primary" style="margin-left:auto" onclick="exportSVG('ambos')">↓ Descargar SVG</button>
     </div>
   </div>
 
   <div class="controls" id="controls">
+    <nav class="studio-nav" aria-label="Secciones del editor">
+      <button class="studio-tab active" data-panel-target="styles" onclick="showPanel('styles')">Estilos</button>
+      <button class="studio-tab" data-panel-target="mouth" onclick="showPanel('mouth')">Forma</button>
+      <button class="studio-tab" data-panel-target="teeth" onclick="showPanel('teeth')">Dientes</button>
+      <button class="studio-tab" data-panel-target="color" onclick="showPanel('color')">Color</button>
+      <button class="studio-tab" data-panel-target="export" onclick="showPanel('export')">Exportar</button>
+    </nav>
+    <div class="section quick-start config-panel active" data-panel="styles">
+      <div class="quick-title"><h2>Empieza por un estilo</h2><span>1 CLIC</span></div>
+      <div class="reference-grid" id="referenceGrid">
+        <button class="ref-card active" data-ref="classic" onclick="applyReferencePreset('classic',this)"><img src="previews/default.svg" alt="Boca clásica"><span>Clásica BUCLE</span><small>JUNTOS</small></button>
+        <button class="ref-card" data-ref="bat" onclick="applyReferencePreset('bat',this)"><img src="previews/bat.svg" alt="Boca murciélago"><span>Murciélago</span><small>ALLTO</small></button>
+        <button class="ref-card" data-ref="drip" onclick="applyReferencePreset('drip',this)"><img src="preview-fangs.svg" alt="Dientes goteo"><span>Goteo</span><small>DIENTES</small></button>
+        <button class="ref-card" data-ref="angular" onclick="applyReferencePreset('angular',this)"><img src="preview-open.svg" alt="Boca angular"><span>Angular</span><small>BOCAS</small></button>
+        <button class="ref-card" data-ref="gap" onclick="applyReferencePreset('gap',this)"><img src="preview-smile.svg" alt="Boca con diastema"><span>Diastema</span><small>JUNTOS</small></button>
+        <button class="ref-card" data-ref="wild" onclick="applyReferencePreset('wild',this)"><img src="preview-dientes.svg" alt="Dientes irregulares"><span>Salvaje</span><small>DIENTES</small></button>
+      </div>
+      <p class="ref-help">Cada miniatura se genera con la misma geometría que recibirás al exportar.</p>
+      <button class="continue-btn" onclick="showPanel('mouth')">Personalizar este estilo →</button>
+    </div>
     <!-- BOCA -->
-    <div class="section">
-      <div class="section-head"><div class="icon boca">💋</div> BOCA / LABIOS — forma real</div>
+    <div class="section config-panel" data-panel="mouth">
+      <div class="section-head"><div class="icon boca">💋</div> FORMA DE LA BOCA</div>
+      <div class="guide-chip">Primero elige la silueta; luego afina sus curvas</div>
+      <div class="ctrl"><div class="label"><span>Familia de forma</span></div><select id="mouthStyle" class="select">
+        <option value="organic">Orgánica / labios</option><option value="capsule">Cápsula redondeada</option><option value="angular">Angular ilustrada</option>
+      </select></div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Ancho</span><b id="v-mouthWidth">380</b></div><input type="range" id="mouthWidth" min="180" max="560" step="1"></div>
         <div class="ctrl"><div class="label"><span>Apertura</span><b id="v-mouthHeight">135</b></div><input type="range" id="mouthHeight" min="18" max="260" step="1"></div>
@@ -131,7 +201,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
         <div class="ctrl"><div class="label"><span>Onda inferior</span><b id="v-wavy">10</b></div><input type="range" id="wavy" min="-30" max="40" step="1"></div>
         <div class="ctrl"><div class="label"><span>Asimetría</span><b id="v-skew">0</b></div><input type="range" id="skew" min="-32" max="32" step="1"></div>
       </div>
-      <div class="small">Modelo: cubics reales con 6 segmentos (picos cupido L/R + dip). El interior se reduce por <b>grosor</b> y se recorta con clipPath sólido.</div>
+      <div class="small">Consejo: combina asimetría y onda inferior para acercarte a los contornos dibujados a mano de las referencias.</div>
       <div style="margin-top:10px">
         <div class="label"><span>Presets Boca (ref BOCAS.png / LIP.png)</span></div>
         <div class="presets">
@@ -148,7 +218,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
     </div>
 
     <!-- DIENTES SUPERIOR -->
-    <div class="section">
+    <div class="section config-panel" data-panel="teeth">
       <div class="section-head"><div class="icon dientes">🦷</div> DIENTES SUPERIORES</div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Cantidad</span><b id="v-upperCount">8</b></div><input type="range" id="upperCount" min="1" max="16" step="1"></div>
@@ -156,7 +226,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
       </div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Alto</span><b id="v-upperToothHeight">52</b></div><input type="range" id="upperToothHeight" min="12" max="120" step="1"></div>
-        <div class="ctrl"><div class="label"><span>Espaciado</span><b id="v-upperSpacing">6</b></div><input type="range" id="upperSpacing" min="0" max="24" step="1"></div>
+        <div class="ctrl"><div class="label"><span>Espaciado</span><b id="v-upperSpacing">6</b></div><input type="range" id="upperSpacing" min="-6" max="50" step="1"></div>
       </div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Pos Y</span><b id="v-upperY">0</b></div><input type="range" id="upperY" min="-45" max="45" step="1"></div>
@@ -174,11 +244,13 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
         <option value="bat">Bat / cúpula</option>
         <option value="molar">Molar ancho</option>
         <option value="irregular">Irregular jagged (DIENTES.png)</option>
+        <option value="drip">Goteo orgánico (ALLTO.svg)</option>
+        <option value="shark">Sierra / tiburón (DIENTES.png)</option>
       </select></div>
     </div>
 
     <!-- DIENTES INFERIOR -->
-    <div class="section">
+    <div class="section config-panel" data-panel="teeth">
       <div class="section-head"><div class="icon dientes">🦷</div> DIENTES INFERIORES <label style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:.72rem;color:#aaa"><input type="checkbox" id="showLower" checked> mostrar</label></div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Cantidad</span><b id="v-lowerCount">6</b></div><input type="range" id="lowerCount" min="1" max="14" step="1"></div>
@@ -186,7 +258,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
       </div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Alto</span><b id="v-lowerToothHeight">36</b></div><input type="range" id="lowerToothHeight" min="10" max="90" step="1"></div>
-        <div class="ctrl"><div class="label"><span>Espaciado</span><b id="v-lowerSpacing">5</b></div><input type="range" id="lowerSpacing" min="0" max="20" step="1"></div>
+        <div class="ctrl"><div class="label"><span>Espaciado</span><b id="v-lowerSpacing">5</b></div><input type="range" id="lowerSpacing" min="-6" max="40" step="1"></div>
       </div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Pos Y</span><b id="v-lowerY">0</b></div><input type="range" id="lowerY" min="-35" max="35" step="1"></div>
@@ -196,6 +268,8 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
           <option value="pointed">Puntudo</option>
           <option value="bat">Bat cúpula</option>
           <option value="fangs">Fangs</option>
+          <option value="drip">Goteo orgánico</option>
+          <option value="shark">Sierra / tiburón</option>
         </select></div>
       </div>
       <div class="small">Inferiores anclados al borde inferior del hueco, con clipPath. Si boca cerrada, se ocultan automáticamente proporcionalmente.</div>
@@ -209,7 +283,7 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
     </div>
 
     <!-- COLORES + SINGLE -->
-    <div class="section">
+    <div class="section config-panel" data-panel="color">
       <div class="section-head"><div class="icon colors">🎨</div> COLORES & DIENTE ÚNICO</div>
       <div class="grid2">
         <div class="ctrl"><div class="label"><span>Boca</span></div><div style="display:flex;gap:8px;align-items:center"><input type="color" id="mouthColor"><span class="small" id="mouthColorHex">#ff254e</span></div></div>
@@ -224,15 +298,15 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
         <option value="molar">Molar</option>
         <option value="bat">Bat cúpula</option>
       </select></div>
-      <div class="small">Exporta sólido sin fondo. Todos los paths usan <code>fill</code> sólido, sin stroke, sin opacidades fake (fix del agente anterior que dibujaba 2 líneas blancas con opacity .75/.9).</div>
+      <div class="small">El fondo solo sirve para previsualizar: tu SVG se descarga transparente y listo para editar.</div>
     </div>
 
-    <div class="section">
+    <div class="section config-panel" data-panel="export">
       <div class="section-head"><div class="icon colors">↓</div> EXPORTAR SVG SÓLIDO</div>
       <div class="export-grid">
         <button class="btn btn-secondary" onclick="exportSVG('boca')">💋 BOCA</button>
         <button class="btn btn-secondary" onclick="exportSVG('dientes')">🦷 DIENTES</button>
-        <button class="btn btn-primary" style="grid-column:span 2" onclick="exportSVG('ambos')">↓ AMBOS + DIENTE</button>
+        <button class="btn btn-primary" style="grid-column:span 2" onclick="exportSVG('ambos')">↓ BOCA COMPLETA</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
         <button class="btn btn-secondary" style="font-size:.78rem" onclick="exportPNG()">PNG snapshot</button>
@@ -243,9 +317,11 @@ input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
   </div>
 </div>
 
+<button class="mobile-export" onclick="exportSVG('ambos')">↓ Descargar mi boca en SVG</button>
 <script>
 // DEFAULTS
 const defaults = {
+  mouthStyle: 'organic',
   mouthWidth: 400,
   mouthHeight: 138,
   lipThickness: 32,
@@ -278,10 +354,24 @@ const defaults = {
   bgColor: '#0e0e10',
   singleStyle: 'incisor'
 };
-let params = {...defaults};
+const referenceRecipes={
+  classic:{mouthStyle:'organic',mouthWidth:410,mouthHeight:150,lipThickness:34,upperCurve:.78,lowerCurve:1.08,cupidBow:10,cornerSharp:.32,smile:0,wavy:9,skew:0,upperCount:6,upperToothWidth:45,upperToothHeight:58,upperSpacing:0,upperGap:18,upperIrregular:.08,upperFangBoost:0,upperStyle:'rounded',showLower:true,lowerCount:5,lowerToothWidth:45,lowerToothHeight:43,lowerSpacing:0,lowerStyle:'rounded'},
+  bat:{mouthStyle:'capsule',mouthWidth:480,mouthHeight:178,lipThickness:20,upperCurve:.85,lowerCurve:1,cupidBow:0,smile:0,wavy:0,skew:0,upperCount:4,upperToothWidth:58,upperToothHeight:66,upperSpacing:42,upperGap:0,upperIrregular:.04,upperFangBoost:.25,upperStyle:'bat',showLower:true,lowerCount:4,lowerToothWidth:66,lowerToothHeight:58,lowerSpacing:28,lowerStyle:'pointed'},
+  drip:{mouthStyle:'organic',mouthWidth:450,mouthHeight:185,lipThickness:28,upperCurve:.8,lowerCurve:1.06,cupidBow:6,smile:2,wavy:16,skew:-5,upperCount:7,upperToothWidth:43,upperToothHeight:75,upperSpacing:-2,upperGap:0,upperIrregular:.65,upperFangBoost:.25,upperStyle:'drip',showLower:true,lowerCount:5,lowerToothWidth:50,lowerToothHeight:58,lowerSpacing:2,lowerStyle:'drip'},
+  angular:{mouthStyle:'angular',mouthWidth:470,mouthHeight:155,lipThickness:31,upperCurve:.8,lowerCurve:1.1,cupidBow:0,cornerSharp:.9,smile:8,wavy:18,skew:12,upperCount:5,upperToothWidth:52,upperToothHeight:62,upperSpacing:4,upperGap:5,upperIrregular:.28,upperFangBoost:.1,upperStyle:'square',showLower:true,lowerCount:4,lowerToothWidth:58,lowerToothHeight:48,lowerSpacing:5,lowerStyle:'pointed'},
+  gap:{mouthStyle:'organic',mouthWidth:455,mouthHeight:128,lipThickness:30,upperCurve:.64,lowerCurve:1.18,cupidBow:8,smile:22,wavy:5,skew:2,upperCount:6,upperToothWidth:43,upperToothHeight:55,upperSpacing:1,upperGap:30,upperIrregular:.02,upperFangBoost:0,upperStyle:'rounded',showLower:false},
+  wild:{mouthStyle:'angular',mouthWidth:430,mouthHeight:190,lipThickness:26,upperCurve:.92,lowerCurve:1.12,cupidBow:4,smile:-4,wavy:22,skew:-14,upperCount:8,upperToothWidth:38,upperToothHeight:74,upperSpacing:-2,upperGap:0,upperIrregular:.9,upperFangBoost:.55,upperStyle:'shark',showLower:true,lowerCount:7,lowerToothWidth:41,lowerToothHeight:61,lowerSpacing:-1,lowerStyle:'shark'}
+};
+let params = {...defaults,...referenceRecipes.classic};
 let mode = 'ambos';
 const CX=310, CY=235;
 const storageKey='bucle_boca_v2';
+let previewZoom=1;
+function setPreviewZoom(delta){
+  previewZoom=clamp(previewZoom+delta,.65,1.55);
+  document.getElementById('preview-svg').style.transform=`scale(${previewZoom})`;
+  toast('Zoom '+Math.round(previewZoom*100)+'%');
+}
 
 function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
 function lerp(a,b,t){return a+(b-a)*t;}
@@ -365,7 +455,7 @@ function generateMouthPaths(p){
 
   // OUTER
   // M left, C to leftPeak, C to dip, C to rightPeak, C to right, C to bottom, C back to left
-  const outer = `
+  let outer = `
 M ${leftX.toFixed(2)} ${leftY.toFixed(2)}
 C ${(leftX + p.mouthWidth*0.13*(1-corner*0.5)).toFixed(2)} ${(topY - p.mouthHeight*0.08).toFixed(2)} ${ (leftPeakX - p.mouthWidth*0.07).toFixed(2)} ${peakY.toFixed(2)} ${leftPeakX.toFixed(2)} ${peakY.toFixed(2)}
 C ${(leftPeakX + 18).toFixed(2)} ${peakY.toFixed(2)} ${(dipX - 26).toFixed(2)} ${dipY.toFixed(2)} ${dipX.toFixed(2)} ${dipY.toFixed(2)}
@@ -421,6 +511,17 @@ C ${(innerRightPeakX + innerW*0.05).toFixed(2)} ${innerPeakY.toFixed(2)} ${(inne
 C ${(innerRightX - innerW*0.14).toFixed(2)} ${(innerBottomY + innerWavy*0.2).toFixed(2)} ${(CX + innerW*0.18).toFixed(2)} ${innerBottomY.toFixed(2)} ${CX.toFixed(2)} ${innerBottomY.toFixed(2)}
 C ${(CX - innerW*0.18).toFixed(2)} ${innerBottomY.toFixed(2)} ${(innerLeftX + innerW*0.14).toFixed(2)} ${(innerBottomY + innerWavy*0.12).toFixed(2)} ${innerLeftX.toFixed(2)} ${innerLeftY.toFixed(2)}
 Z`.trim();
+  }
+
+  // Familias inspiradas en BOCAS.png: contornos simples, sólidos y expresivos.
+  if(p.mouthStyle==='capsule'){
+    const oy=Math.max(20,p.mouthHeight*.72), iy=Math.max(7,(innerBottomY-innerTopY)/2);
+    outer=`M ${leftX} ${CY} C ${leftX} ${CY-oy} ${CX-halfW*.45} ${CY-oy} ${CX} ${CY-oy} C ${CX+halfW*.45} ${CY-oy} ${rightX} ${CY-oy} ${rightX} ${CY} C ${rightX} ${CY+oy} ${CX+halfW*.45} ${CY+oy} ${CX} ${CY+oy} C ${CX-halfW*.45} ${CY+oy} ${leftX} ${CY+oy} ${leftX} ${CY} Z`;
+    inner=`M ${innerLeftX} ${CY} C ${innerLeftX} ${CY-iy} ${CX-innerHalf*.45} ${CY-iy} ${CX} ${CY-iy} C ${CX+innerHalf*.45} ${CY-iy} ${innerRightX} ${CY-iy} ${innerRightX} ${CY} C ${innerRightX} ${CY+iy} ${CX+innerHalf*.45} ${CY+iy} ${CX} ${CY+iy} C ${CX-innerHalf*.45} ${CY+iy} ${innerLeftX} ${CY+iy} ${innerLeftX} ${CY} Z`;
+  } else if(p.mouthStyle==='angular'){
+    const ot=Math.max(34,p.mouthHeight*.7), ob=Math.max(38,p.mouthHeight*.82), it=Math.max(9,(CY-innerTopY)), ib=Math.max(9,(innerBottomY-CY));
+    outer=`M ${leftX} ${CY-p.smile*.15} L ${CX-halfW*.5} ${CY-ot} L ${CX+p.skew*.35} ${CY-ot*.82} L ${CX+halfW*.53} ${CY-ot*.93} L ${rightX} ${CY+p.smile*.12} L ${CX+halfW*.38} ${CY+ob} L ${CX-halfW*.18} ${CY+ob+wavy*.25} L ${leftX} ${CY-p.smile*.15} Z`;
+    inner=`M ${innerLeftX} ${CY} L ${CX-innerHalf*.48} ${CY-it} L ${CX} ${CY-it*.78} L ${CX+innerHalf*.5} ${CY-it*.9} L ${innerRightX} ${CY} L ${CX+innerHalf*.34} ${CY+ib} L ${CX-innerHalf*.2} ${CY+ib} Z`;
   }
 
   const innerBounds = { left: innerLeftX, right: innerRightX, top: innerTopY, bottom: innerBottomY, centerY: (innerTopY+innerBottomY)/2, height: innerBottomY - innerTopY, width: innerW, cx: CX, cy: CY };
@@ -501,6 +602,15 @@ function toothPath(x, baseY, w, h, style, isLower, seedRnd){
          L ${(x+hw*0.15).toFixed(1)} ${tipY.toFixed(1)}
          Q ${x.toFixed(1)} ${(tipY + (isLower?3:-3)).toFixed(1)} ${(x-hw*0.15).toFixed(1)} ${tipY.toFixed(1)}
          L ${(x-hw*0.5).toFixed(1)} ${tipY.toFixed(1)} Q ${(x-hw).toFixed(1)} ${tipY.toFixed(1)} ${(x-hw).toFixed(1)} ${(tipY - (isLower?-1:1)*3).toFixed(1)} Z`;
+      break;
+    case 'drip':
+      // Laterales suaves y punta descentrada: lenguaje de ALLTO.svg / DIENTES.png.
+      { const lean=(seedRnd-.5)*w*.32, neck=hw*.78;
+        d=`M ${x-hw} ${baseY} Q ${x-neck} ${(baseY+tipY)/2} ${x+lean} ${tipY} Q ${x+neck} ${(baseY+tipY)/2} ${x+hw} ${baseY} Z`; }
+      break;
+    case 'shark':
+      { const lean=(seedRnd-.5)*w*.24;
+        d=`M ${x-hw} ${baseY} L ${x+hw} ${baseY} L ${x+lean} ${tipY} Z`; }
       break;
     case 'irregular':
       {
@@ -741,7 +851,33 @@ function setMode(m){
   render();
 }
 
+function showPanel(name){
+  document.querySelectorAll('.config-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.panel===name));
+  document.querySelectorAll('.studio-tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.panelTarget===name));
+  const controls=document.getElementById('controls');
+  if(window.innerWidth<1060) controls.scrollIntoView({behavior:'smooth',block:'start'}); else controls.scrollTop=0;
+}
+
+function renderReferenceThumbnails(){
+  const current=params;
+  document.querySelectorAll('.ref-card[data-ref]').forEach(card=>{
+    params={...defaults,...referenceRecipes[card.dataset.ref]};
+    const svg=generateSVGString('ambos').replace('<?xml version="1.0" encoding="UTF-8"?>','');
+    card.querySelector('img').src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  });
+  params=current;
+}
+
 // PRESETS
+function applyReferencePreset(name, button){
+
+  Object.assign(params,referenceRecipes[name]||referenceRecipes.classic);
+  mode='ambos';
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='ambos'));
+  document.querySelectorAll('.ref-card').forEach(b=>b.classList.toggle('active',b===button));
+  updateValueLabels(); render(); toast('Estilo aplicado · '+name);
+}
+
 function applyMouthPreset(name){
   const p=params;
   switch(name){
@@ -878,6 +1014,7 @@ function loadLocal(){
   }catch(e){}
 }
 function randomizeAll(){
+  params.mouthStyle = ['organic','capsule','angular'][Math.floor(Math.random()*3)];
   params.mouthWidth = Math.floor(Math.random()* (520-200)+200);
   params.mouthHeight = Math.floor(Math.random()* (220-26)+26);
   params.lipThickness = Math.floor(Math.random()* (58-12)+12);
@@ -895,7 +1032,7 @@ function randomizeAll(){
   params.upperGap = Math.random()<0.3? Math.floor(Math.random()*26) : 0;
   params.upperIrregular = +Math.random().toFixed(2);
   params.upperFangBoost = + (Math.random()*1.2).toFixed(2);
-  const styles=['rounded','square','pointed','fangs','bat','molar','irregular'];
+  const styles=['rounded','square','pointed','fangs','bat','molar','irregular','drip','shark'];
   params.upperStyle = styles[Math.floor(Math.random()*styles.length)];
   params.lowerStyle = styles[Math.floor(Math.random()*styles.length)];
   params.lowerCount = Math.floor(Math.random()*9+2);
@@ -904,8 +1041,9 @@ function randomizeAll(){
   updateValueLabels(); render(); toast('Aleatorio');
 }
 function resetAll(){
-  params={...defaults};
+  params={...defaults,...referenceRecipes.classic};
   mode='ambos';
+  document.querySelectorAll('.ref-card').forEach(b=>b.classList.toggle('active',b.dataset.ref==='classic'));
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode==='ambos'));
   updateValueLabels(); render(); toast('Reset');
 }
@@ -917,9 +1055,12 @@ function toast(msg){
 // init
 bind();
 loadLocal();
+renderReferenceThumbnails();
 updateValueLabels();
 render();
+document.getElementById('stage').addEventListener('wheel',e=>{e.preventDefault();setPreviewZoom(e.deltaY<0?.08:-.08)},{passive:false});
 document.addEventListener('keydown', e=>{
+  if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   if(e.key.toLowerCase()==='r') randomizeAll();
   if(e.key==='Escape') resetAll();
 });
