@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador de Boca • Interactivo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: #ff2d55;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+            background: linear-gradient(145deg, #0f0f11 0%, #1a1a1f 100%);
+            color: #f1f1f3;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-family: 'Space Grotesk', system_ui, sans-serif;
+            font-size: 2.25rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, #fff, #ff2d55);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        
+        .header p {
+            color: #888;
+            font-size: 1rem;
+        }
+        
+        .main-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+        }
+        
+        .preview-panel {
+            background: #16161a;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #2a2a30;
+        }
+        
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .preview-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ddd;
+        }
+        
+        .preview-container {
+            background: #0a0a0c;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 420px;
+            position: relative;
+            border: 1px solid #222;
+        }
+        
+        #preview-svg {
+            max-width: 100%;
+            max-height: 380px;
+            width: auto;
+            height: auto;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.6));
+        }
+        
+        .controls-panel {
+            background: #16161a;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #2a2a30;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .control-section {
+            background: #1f1f24;
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #2f2f35;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .section-header .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        
+        .section-header.boca .icon { background: #ff2d55; color: white; }
+        .section-header.dientes .icon { background: #fff; color: #111; }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.82rem;
+            color: #bbb;
+            font-weight: 500;
+        }
+        
+        .control-label span {
+            color: #ff2d55;
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 38px;
+            text-align: right;
+        }
+        
+        .slider-container {
+            position: relative;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+            margin: 4px 0;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #ff2d55;
+            border: 3px solid #16161a;
+            box-shadow: 0 2px 6px rgba(255, 45, 85, 0.5);
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        select {
+            width: 100%;
+            padding: 9px 14px;
+            background: #1f1f24;
+            border: 1px solid #3a3a42;
+            border-radius: 10px;
+            color: #ddd;
+            font-size: 0.9rem;
+            appearance: none;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 6px;
+        }
+        
+        .color-input {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 0 0 3px #2a2a30;
+        }
+        
+        .color-input::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        .color-input::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+        }
+        
+        .presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .preset-btn {
+            background: #222;
+            border: 1px solid #3a3a42;
+            color: #ccc;
+            font-size: 0.72rem;
+            padding: 5px 11px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all .1s;
+            font-weight: 500;
+        }
+        
+        .preset-btn:hover {
+            background: #333;
+            border-color: #555;
+            transform: translateY(-1px);
+        }
+        
+        .preset-btn.active {
+            background: #ff2d55;
+            color: white;
+            border-color: #ff2d55;
+        }
+        
+        .export-section {
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid #2a2a30;
+        }
+        
+        .export-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: #ff2d55;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 45, 85, 0.35);
+        }
+        
+        .btn-primary:hover {
+            background: #ff446e;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #222;
+            color: #ccc;
+            border: 1px solid #3a3a42;
+        }
+        
+        .btn-secondary:hover {
+            background: #2a2a30;
+            border-color: #555;
+        }
+        
+        .export-btn {
+            font-size: 0.82rem;
+            padding: 10px 12px;
+            flex: 1;
+        }
+        
+        .btn-full {
+            grid-column: span 2;
+            margin-top: 4px;
+        }
+        
+        .status {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+        }
+        
+        .svg-label {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(0,0,0,0.6);
+            color: #aaa;
+            font-size: 0.68rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            letter-spacing: -.3px;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .action-bar button {
+            flex: 1;
+        }
+        
+        .legend {
+            font-size: 0.72rem;
+            color: #666;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            margin-top: 6px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+        
+        .mouth-dot { background: #ff2d55; }
+        .teeth-dot { background: #fff; }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-container {
+                min-height: 340px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Configurador de Boca</h1>
+        <p>Configura variables de boca • Edita con sliders • Exporta SVGs sólidos</p>
+    </div>
+    
+    <div class="main-container">
+        <!-- PREVIEW -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h2>PREVIEW EN VIVO</h2>
+                <div style="display: flex; gap: 6px; font-size: 0.75rem;">
+                    <div onclick="setPreviewMode('ambos')" id="mode-ambos" class="preset-btn active" style="padding: 4px 10px; font-size: 0.72rem;">AMBOS</div>
+                    <div onclick="setPreviewMode('boca')" id="mode-boca" class="preset-btn" style="padding: 4px 10px; font-size: 0.72rem;">BOCA</div>
+                    <div onclick="setPreviewMode('dientes')" id="mode-dientes" class="preset-btn" style="padding: 4px 10px; font-size: 0.72rem;">DIENTES</div>
+                </div>
+            </div>
+            
+            <div class="preview-container" id="preview-container">
+                <div class="svg-label" id="preview-label">AMBOS</div>
+                <svg id="preview-svg" width="620" height="460" viewBox="0 0 620 460" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Content generated by JS -->
+                </svg>
+            </div>
+            
+            <div class="action-bar">
+                <button onclick="randomizeAll()" class="btn btn-secondary" style="font-size:0.85rem; padding:9px 14px;">
+                    🎲 Aleatorio
+                </button>
+                <button onclick="resetAll()" class="btn btn-secondary" style="font-size:0.85rem; padding:9px 14px;">
+                    ↺ Reset
+                </button>
+            </div>
+        </div>
+        
+        <!-- CONTROLS -->
+        <div class="controls-panel">
+            
+            <!-- BOCA -->
+            <div class="control-section">
+                <div class="section-header boca">
+                    <div class="icon">💋</div>
+                    <span>BOCA / LABIOS</span>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Ancho</span>
+                        <span id="val-mouthWidth">380</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="mouthWidth" min="160" max="520" step="2" value="380" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Altura / Apertura</span>
+                        <span id="val-mouthHeight">135</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="mouthHeight" min="40" max="230" step="1" value="135" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Grosor labio</span>
+                        <span id="val-lipThickness">28</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="lipThickness" min="12" max="60" step="1" value="28" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Curva superior</span>
+                        <span id="val-upperCurve">0.75</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="upperCurve" min="0.3" max="1.7" step="0.01" value="0.75" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Curva inferior</span>
+                        <span id="val-lowerCurve">1.05</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="lowerCurve" min="0.4" max="1.9" step="0.01" value="1.05" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Sonrisa / Curva</span>
+                        <span id="val-smile">0</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="smile" min="-55" max="70" step="1" value="0" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Color Boca</div>
+                    <div class="color-row">
+                        <input type="color" id="mouthColor" value="#ff2d55" oninput="updateParams()" class="color-input">
+                        <div style="font-size:0.75rem; color:#777;">Sólido</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="control-label" style="margin-bottom:6px;">Presets Boca</div>
+                    <div class="presets">
+                        <button onclick="applyBocaPreset(0)" class="preset-btn">Ovalada</button>
+                        <button onclick="applyBocaPreset(1)" class="preset-btn">Sonrisa</button>
+                        <button onclick="applyBocaPreset(2)" class="preset-btn">Abierta</button>
+                        <button onclick="applyBocaPreset(3)" class="preset-btn">Cerrada</button>
+                        <button onclick="applyBocaPreset(4)" class="preset-btn">Ancha</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- DIENTES -->
+            <div class="control-section">
+                <div class="section-header dientes">
+                    <div class="icon">🦷</div>
+                    <span>DIENTES</span>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Número de dientes</span>
+                        <span id="val-teethCount">8</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="teethCount" min="3" max="16" step="1" value="8" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Ancho diente</span>
+                        <span id="val-toothWidth">34</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="toothWidth" min="12" max="65" step="1" value="34" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Altura dientes</span>
+                        <span id="val-toothHeight">52</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="toothHeight" min="15" max="115" step="1" value="52" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Espaciado</span>
+                        <span id="val-toothSpacing">6</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="toothSpacing" min="0" max="25" step="1" value="6" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Posición vertical</span>
+                        <span id="val-teethY">0</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="teethY" min="-60" max="70" step="1" value="0" oninput="updateParams()">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Estilo de dientes</div>
+                    <div class="select-wrapper">
+                        <select id="teethStyle" onchange="updateParams()">
+                            <option value="straight">Rectos / Clásicos</option>
+                            <option value="pointed">Puntudos</option>
+                            <option value="fangs">Colmillos</option>
+                            <option value="bat">Batman / Irregular</option>
+                            <option value="square">Cuadrados</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Color Dientes</div>
+                    <div class="color-row">
+                        <input type="color" id="teethColor" value="#ffffff" oninput="updateParams()" class="color-input">
+                        <div style="font-size:0.75rem; color:#777;">Sólido</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="control-label" style="margin-bottom:6px;">Presets Dientes</div>
+                    <div class="presets">
+                        <button onclick="applyTeethPreset(0)" class="preset-btn">Normal</button>
+                        <button onclick="applyTeethPreset(1)" class="preset-btn">Puntudos</button>
+                        <button onclick="applyTeethPreset(2)" class="preset-btn">Colmillos</button>
+                        <button onclick="applyTeethPreset(3)" class="preset-btn">Batman</button>
+                        <button onclick="applyTeethPreset(4)" class="preset-btn">Menos</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- EXPORTS -->
+            <div class="export-section">
+                <div style="font-size:0.82rem; font-weight:600; margin-bottom:10px; color:#ccc;">EXPORTAR SVG (sólido)</div>
+                
+                <div class="export-grid">
+                    <button onclick="exportSVG('boca')" class="btn btn-secondary export-btn">
+                        <span>💋</span> 
+                        <span>BOCA</span>
+                    </button>
+                    <button onclick="exportSVG('dientes')" class="btn btn-secondary export-btn">
+                        <span>🦷</span> 
+                        <span>DIENTES</span>
+                    </button>
+                    <button onclick="exportSVG('ambos')" class="btn btn-primary export-btn btn-full">
+                        <span>↓</span> 
+                        <span>AMBOS (combinado)</span>
+                    </button>
+                </div>
+                
+                <div class="status">Los SVGs son 100% sólidos, listos para usar.</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Estado global de parámetros
+        let params = {
+            // Boca
+            mouthWidth: 380,
+            mouthHeight: 135,
+            lipThickness: 28,
+            upperCurve: 0.75,
+            lowerCurve: 1.05,
+            smile: 0,
+            mouthColor: '#ff2d55',
+            
+            // Dientes
+            teethCount: 8,
+            toothWidth: 34,
+            toothHeight: 52,
+            toothSpacing: 6,
+            teethY: 0,
+            teethColor: '#ffffff',
+            teethStyle: 'straight'
+        };
+        
+        let previewMode = 'ambos';
+        
+        function updateSliderValues() {
+            // Boca
+            document.getElementById('val-mouthWidth').textContent = params.mouthWidth;
+            document.getElementById('val-mouthHeight').textContent = params.mouthHeight;
+            document.getElementById('val-lipThickness').textContent = params.lipThickness;
+            document.getElementById('val-upperCurve').textContent = params.upperCurve.toFixed(2);
+            document.getElementById('val-lowerCurve').textContent = params.lowerCurve.toFixed(2);
+            document.getElementById('val-smile').textContent = params.smile;
+            
+            // Dientes
+            document.getElementById('val-teethCount').textContent = params.teethCount;
+            document.getElementById('val-toothWidth').textContent = params.toothWidth;
+            document.getElementById('val-toothHeight').textContent = params.toothHeight;
+            document.getElementById('val-toothSpacing').textContent = params.toothSpacing;
+            document.getElementById('val-teethY').textContent = params.teethY;
+            
+            // Actualizar sliders
+            document.getElementById('mouthWidth').value = params.mouthWidth;
+            document.getElementById('mouthHeight').value = params.mouthHeight;
+            document.getElementById('lipThickness').value = params.lipThickness;
+            document.getElementById('upperCurve').value = params.upperCurve;
+            document.getElementById('lowerCurve').value = params.lowerCurve;
+            document.getElementById('smile').value = params.smile;
+            
+            document.getElementById('teethCount').value = params.teethCount;
+            document.getElementById('toothWidth').value = params.toothWidth;
+            document.getElementById('toothHeight').value = params.toothHeight;
+            document.getElementById('toothSpacing').value = params.toothSpacing;
+            document.getElementById('teethY').value = params.teethY;
+            document.getElementById('teethStyle').value = params.teethStyle;
+            
+            document.getElementById('mouthColor').value = params.mouthColor;
+            document.getElementById('teethColor').value = params.teethColor;
+        }
+        
+        function syncFromSliders() {
+            params.mouthWidth = parseFloat(document.getElementById('mouthWidth').value);
+            params.mouthHeight = parseFloat(document.getElementById('mouthHeight').value);
+            params.lipThickness = parseFloat(document.getElementById('lipThickness').value);
+            params.upperCurve = parseFloat(document.getElementById('upperCurve').value);
+            params.lowerCurve = parseFloat(document.getElementById('lowerCurve').value);
+            params.smile = parseFloat(document.getElementById('smile').value);
+            
+            params.teethCount = parseInt(document.getElementById('teethCount').value);
+            params.toothWidth = parseFloat(document.getElementById('toothWidth').value);
+            params.toothHeight = parseFloat(document.getElementById('toothHeight').value);
+            params.toothSpacing = parseFloat(document.getElementById('toothSpacing').value);
+            params.teethY = parseFloat(document.getElementById('teethY').value);
+            params.teethStyle = document.getElementById('teethStyle').value;
+            
+            params.mouthColor = document.getElementById('mouthColor').value;
+            params.teethColor = document.getElementById('teethColor').value;
+        }
+        
+        function updateParams() {
+            syncFromSliders();
+            updateSliderValues();
+            renderPreview();
+        }
+        
+        function applyBocaPreset(presetIndex) {
+            // Limpiar active
+            document.querySelectorAll('.controls-panel .preset-btn').forEach(b => b.classList.remove('active'));
+            
+            switch(presetIndex) {
+                case 0: // Ovalada
+                    params.mouthWidth = 380;
+                    params.mouthHeight = 135;
+                    params.lipThickness = 28;
+                    params.upperCurve = 0.75;
+                    params.lowerCurve = 1.05;
+                    params.smile = 0;
+                    break;
+                case 1: // Sonrisa
+                    params.mouthWidth = 420;
+                    params.mouthHeight = 105;
+                    params.lipThickness = 32;
+                    params.upperCurve = 0.55;
+                    params.lowerCurve = 1.45;
+                    params.smile = 42;
+                    break;
+                case 2: // Abierta
+                    params.mouthWidth = 340;
+                    params.mouthHeight = 195;
+                    params.lipThickness = 22;
+                    params.upperCurve = 0.9;
+                    params.lowerCurve = 0.95;
+                    params.smile = -10;
+                    break;
+                case 3: // Cerrada
+                    params.mouthWidth = 395;
+                    params.mouthHeight = 58;
+                    params.lipThickness = 35;
+                    params.upperCurve = 0.65;
+                    params.lowerCurve = 1.1;
+                    params.smile = 15;
+                    break;
+                case 4: // Ancha
+                    params.mouthWidth = 505;
+                    params.mouthHeight = 118;
+                    params.lipThickness = 26;
+                    params.upperCurve = 0.82;
+                    params.lowerCurve = 1.22;
+                    params.smile = 18;
+                    break;
+            }
+            
+            updateSliderValues();
+            renderPreview();
+            
+            // Resaltar el botón seleccionado
+            const btns = document.querySelectorAll('.controls-panel .preset-btn');
+            if (btns[presetIndex]) btns[presetIndex].classList.add('active');
+            setTimeout(() => {
+                if (btns[presetIndex]) btns[presetIndex].classList.remove('active');
+            }, 900);
+        }
+        
+        function applyTeethPreset(presetIndex) {
+            const btns = document.querySelectorAll('.controls-panel .preset-btn');
+            
+            switch(presetIndex) {
+                case 0: // Normal
+                    params.teethCount = 8;
+                    params.toothWidth = 34;
+                    params.toothHeight = 52;
+                    params.toothSpacing = 6;
+                    params.teethY = 0;
+                    params.teethStyle = 'straight';
+                    break;
+                case 1: // Puntudos
+                    params.teethCount = 9;
+                    params.toothWidth = 29;
+                    params.toothHeight = 68;
+                    params.toothSpacing = 5;
+                    params.teethY = -3;
+                    params.teethStyle = 'pointed';
+                    break;
+                case 2: // Colmillos
+                    params.teethCount = 7;
+                    params.toothWidth = 38;
+                    params.toothHeight = 72;
+                    params.toothSpacing = 4;
+                    params.teethY = 8;
+                    params.teethStyle = 'fangs';
+                    break;
+                case 3: // Batman
+                    params.teethCount = 10;
+                    params.toothWidth = 32;
+                    params.toothHeight = 48;
+                    params.toothSpacing = 3;
+                    params.teethY = 5;
+                    params.teethStyle = 'bat';
+                    break;
+                case 4: // Menos dientes
+                    params.teethCount = 5;
+                    params.toothWidth = 44;
+                    params.toothHeight = 60;
+                    params.toothSpacing = 14;
+                    params.teethY = 0;
+                    params.teethStyle = 'square';
+                    break;
+            }
+            
+            updateSliderValues();
+            renderPreview();
+            
+            setTimeout(() => {
+                const teethBtns = document.querySelectorAll('.controls-panel .preset-btn');
+                if (teethBtns[presetIndex]) teethBtns[presetIndex].classList.add('active');
+                setTimeout(() => {
+                    if (teethBtns[presetIndex]) teethBtns[presetIndex].classList.remove('active');
+                }, 650);
+            }, 120);
+        }
+        
+        function setPreviewMode(mode) {
+            previewMode = mode;
+            
+            // Actualizar UI
+            document.getElementById('mode-ambos').classList.remove('active');
+            document.getElementById('mode-boca').classList.remove('active');
+            document.getElementById('mode-dientes').classList.remove('active');
+            
+            document.getElementById('mode-' + mode).classList.add('active');
+            
+            // Actualizar etiqueta
+            const label = document.getElementById('preview-label');
+            if (mode === 'ambos') label.textContent = 'AMBOS';
+            else if (mode === 'boca') label.textContent = 'BOCA';
+            else label.textContent = 'DIENTES';
+            
+            renderPreview();
+        }
+        
+        // Genera el path de la boca (labios) usando Beziers parametrizados
+        function generateMouthPath(cx, cy, w, h, lipThick, upperC, lowerC, smile) {
+            const halfW = w / 2;
+            
+            // Puntos base
+            const leftX = cx - halfW;
+            const rightX = cx + halfW;
+            
+            // Ajuste de curva con smile
+            const smileFactor = smile / 80;
+            
+            // Outer lips (contorno exterior)
+            const outerTopY = cy - (h * upperC) + (smileFactor * 18);
+            const outerBottomY = cy + (h * lowerC) + (smileFactor * -22);
+            
+            // Control points
+            const topCtrl1X = cx - halfW * 0.45;
+            const topCtrl1Y = cy - (h * upperC * 1.15) + smile * 0.35;
+            
+            const topCtrl2X = cx + halfW * 0.45;
+            const topCtrl2Y = cy - (h * upperC * 1.15) + smile * 0.35;
+            
+            const bottomCtrl1X = cx - halfW * 0.55;
+            const bottomCtrl1Y = cy + (h * lowerC * 1.05) + smile * -0.45;
+            
+            const bottomCtrl2X = cx + halfW * 0.55;
+            const bottomCtrl2Y = cy + (h * lowerC * 1.05) + smile * -0.45;
+            
+            // Outer path (labios)
+            const outerPath = `
+                M ${leftX} ${cy}
+                Q ${topCtrl1X} ${outerTopY} ${cx} ${outerTopY - 6}
+                Q ${topCtrl2X} ${outerTopY} ${rightX} ${cy}
+                Q ${bottomCtrl2X} ${outerBottomY} ${cx} ${outerBottomY + 6}
+                Q ${bottomCtrl1X} ${outerBottomY} ${leftX} ${cy}
+                Z
+            `;
+            
+            // Inner mouth (abertura negra)
+            const innerW = w * 0.86;
+            const innerH = h * 0.75;
+            const innerHalf = innerW / 2;
+            
+            const innerLeft = cx - innerHalf;
+            const innerRight = cx + innerHalf;
+            
+            const innerTop = cy - (innerH * (upperC * 0.92)) + smile * 0.15;
+            const innerBottom = cy + (innerH * (lowerC * 0.85)) + smile * -0.35;
+            
+            const innerCtrl1X = cx - innerHalf * 0.5;
+            const innerCtrl1Y = cy - (innerH * upperC * 0.92) + smile * 0.1;
+            
+            const innerCtrl2X = cx + innerHalf * 0.5;
+            const innerCtrl2Y = cy - (innerH * upperC * 0.92) + smile * 0.1;
+            
+            const innerBottomCtrl1X = cx - innerHalf * 0.6;
+            const innerBottomCtrl1Y = cy + (innerH * lowerC * 0.8);
+            
+            const innerBottomCtrl2X = cx + innerHalf * 0.6;
+            const innerBottomCtrl2Y = cy + (innerH * lowerC * 0.8);
+            
+            const innerPath = `
+                M ${innerLeft} ${cy}
+                Q ${innerCtrl1X} ${innerTop} ${cx} ${innerTop}
+                Q ${innerCtrl2X} ${innerTop} ${innerRight} ${cy}
+                Q ${innerBottomCtrl2X} ${innerBottom} ${cx} ${innerBottom}
+                Q ${innerBottomCtrl1X} ${innerBottom} ${innerLeft} ${cy}
+                Z
+            `;
+            
+            return { outerPath: outerPath.trim(), innerPath: innerPath.trim() };
+        }
+        
+        // Genera dientes según estilo
+        function generateTeeth(cx, cy, count, tw, th, spacing, style, offsetY) {
+            let teeth = [];
+            const totalWidth = (tw + spacing) * count - spacing;
+            const startX = cx - totalWidth / 2;
+            const baseY = cy + offsetY;
+            
+            for (let i = 0; i < count; i++) {
+                const x = startX + i * (tw + spacing) + (tw / 2);
+                
+                let path = '';
+                let heightMod = th;
+                let widthMod = tw;
+                
+                // Variaciones de estilo
+                if (style === 'pointed') {
+                    heightMod = th * (1 + (i % 2) * 0.18);
+                    // Triángulo
+                    const tipY = baseY + heightMod * 0.95;
+                    path = `M ${x - tw/2} ${baseY} L ${x} ${tipY} L ${x + tw/2} ${baseY} Z`;
+                } 
+                else if (style === 'fangs') {
+                    // Colmillos: algunos más largos
+                    if (i === 0 || i === count - 1) {
+                        heightMod = th * 1.45;
+                    } else if (i === 1 || i === count - 2) {
+                        heightMod = th * 1.15;
+                    }
+                    
+                    // Forma de colmillo: un poco más puntiaguda
+                    const tipY = baseY + heightMod * 0.98;
+                    const side = tw * 0.45;
+                    path = `M ${x - side} ${baseY} L ${x} ${tipY} L ${x + side} ${baseY} Z`;
+                } 
+                else if (style === 'bat') {
+                    // Estilo irregular tipo Batman
+                    const mod = Math.sin(i * 1.3) * 0.3;
+                    heightMod = th * (0.85 + mod);
+                    widthMod = tw * (0.95 + Math.cos(i) * 0.15);
+                    
+                    // Forma irregular
+                    const p1y = baseY + heightMod * 0.4;
+                    const p2y = baseY + heightMod * 0.9;
+                    path = `M ${x - widthMod/2} ${baseY} 
+                            Q ${x - widthMod/2.2} ${p1y} ${x - widthMod * 0.1} ${p2y} 
+                            Q ${x} ${p2y + 4} ${x + widthMod * 0.1} ${p2y} 
+                            Q ${x + widthMod/2.2} ${p1y} ${x + widthMod/2} ${baseY} Z`;
+                } 
+                else if (style === 'square') {
+                    // Cuadrados más anchos y rectos
+                    widthMod = tw * 1.1;
+                    heightMod = th * 0.85;
+                    const bottomY = baseY + heightMod;
+                    path = `M ${x - widthMod/2} ${baseY} L ${x + widthMod/2} ${baseY} L ${x + widthMod/2} ${bottomY} L ${x - widthMod/2} ${bottomY} Z`;
+                } 
+                else {
+                    // straight (clásicos)
+                    const bottomY = baseY + heightMod;
+                    const round = Math.min(7, tw * 0.22);
+                    path = `M ${x - widthMod/2} ${baseY} 
+                            L ${x + widthMod/2} ${baseY} 
+                            L ${x + widthMod/2} ${bottomY - round} 
+                            Q ${x + widthMod/2} ${bottomY} ${x + widthMod/2 - round} ${bottomY} 
+                            L ${x - widthMod/2 + round} ${bottomY} 
+                            Q ${x - widthMod/2} ${bottomY} ${x - widthMod/2} ${bottomY - round} Z`;
+                }
+                
+                teeth.push(path.trim());
+            }
+            
+            return teeth;
+        }
+        
+        function renderPreview() {
+            const svg = document.getElementById('preview-svg');
+            const cx = 310;
+            const cy = 235;
+            
+            // Generar paths
+            const mouthData = generateMouthPath(
+                cx, cy, 
+                params.mouthWidth, params.mouthHeight, 
+                params.lipThickness, 
+                params.upperCurve, params.lowerCurve, 
+                params.smile
+            );
+            
+            const teethPaths = generateTeeth(
+                cx, cy + 12, 
+                params.teethCount, 
+                params.toothWidth, params.toothHeight, 
+                params.toothSpacing, 
+                params.teethStyle, 
+                params.teethY
+            );
+            
+            let content = '';
+            
+            if (previewMode === 'ambos' || previewMode === 'boca') {
+                // Boca (labios)
+                content += `
+                    <!-- BOCA / LABIOS -->
+                    <path d="${mouthData.outerPath}" fill="${params.mouthColor}" />
+                    <path d="${mouthData.innerPath}" fill="#111111" />
+                `;
+            }
+            
+            if (previewMode === 'ambos' || previewMode === 'dientes') {
+                // Dientes
+                content += `<!-- DIENTES -->`;
+                teethPaths.forEach(p => {
+                    content += `<path d="${p}" fill="${params.teethColor}" />`;
+                });
+                
+                // Añadir un poco de detalle en dientes para que se vea más sólido y profesional
+                if (previewMode === 'ambos' || previewMode === 'dientes') {
+                    // Línea sutil de separación (opcional pero ayuda a la legibilidad)
+                    const teethY = cy + 12 + params.teethY;
+                    const half = params.toothWidth * 0.35;
+                    content += `<path d="M ${cx - half * 0.6} ${teethY + 12} Q ${cx} ${teethY + 24} ${cx + half * 0.6} ${teethY + 12}" fill="none" stroke="#ddd" stroke-width="1.6" opacity="0.15" />`;
+                }
+            }
+            
+            svg.innerHTML = content;
+        }
+        
+        // Genera un SVG completo limpio para exportar
+        function generateFullSVG(type) {
+            const cx = 310;
+            const cy = 235;
+            const viewBoxW = 620;
+            const viewBoxH = 460;
+            
+            let svgContent = '';
+            
+            const mouthData = generateMouthPath(
+                cx, cy, 
+                params.mouthWidth, params.mouthHeight, 
+                params.lipThickness, 
+                params.upperCurve, params.lowerCurve, 
+                params.smile
+            );
+            
+            const teethPaths = generateTeeth(
+                cx, cy + 12, 
+                params.teethCount, 
+                params.toothWidth, params.toothHeight, 
+                params.toothSpacing, 
+                params.teethStyle, 
+                params.teethY
+            );
+            
+            if (type === 'boca' || type === 'ambos') {
+                svgContent += `
+                    <path d="${mouthData.outerPath}" fill="${params.mouthColor}" />
+                    <path d="${mouthData.innerPath}" fill="#111111" />
+                `;
+            }
+            
+            if (type === 'dientes' || type === 'ambos') {
+                teethPaths.forEach(path => {
+                    svgContent += `<path d="${path}" fill="${params.teethColor}" />`;
+                });
+            }
+            
+            const fullSVG = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="${viewBoxW}" height="${viewBoxH}" viewBox="0 0 ${viewBoxW} ${viewBoxH}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            .solid { fill: currentColor; }
+        </style>
+    </defs>
+    ${svgContent}
+</svg>`;
+            
+            return fullSVG;
+        }
+        
+        function exportSVG(type) {
+            const svgString = generateFullSVG(type);
+            const filename = (type === 'boca') ? 'BOCA.svg' : 
+                             (type === 'dientes') ? 'DIENTES.svg' : 'AMBOS.svg';
+            
+            // Crear blob y descargar
+            const blob = new Blob([svgString], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            // Feedback
+            const originalText = event.currentTarget ? event.currentTarget.innerHTML : '';
+            showToast(`Exportado: ${filename}`);
+        }
+        
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#ddd;padding:9px 22px;border-radius:999px;font-size:0.82rem;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:9999;';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transition = 'all .25s ease';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.parentNode.removeChild(toast), 180);
+            }, 1700);
+        }
+        
+        function randomizeAll() {
+            // Boca
+            params.mouthWidth = Math.floor(Math.random() * (510 - 190)) + 190;
+            params.mouthHeight = Math.floor(Math.random() * (210 - 55)) + 55;
+            params.lipThickness = Math.floor(Math.random() * (55 - 14)) + 14;
+            params.upperCurve = parseFloat((Math.random() * 1.3 + 0.35).toFixed(2));
+            params.lowerCurve = parseFloat((Math.random() * 1.3 + 0.45).toFixed(2));
+            params.smile = Math.floor(Math.random() * 120) - 50;
+            
+            // Dientes
+            params.teethCount = Math.floor(Math.random() * (15 - 4)) + 4;
+            params.toothWidth = Math.floor(Math.random() * (60 - 16)) + 16;
+            params.toothHeight = Math.floor(Math.random() * (105 - 20)) + 20;
+            params.toothSpacing = Math.floor(Math.random() * 22);
+            params.teethY = Math.floor(Math.random() * 110) - 50;
+            
+            // Estilos aleatorios
+            const styles = ['straight', 'pointed', 'fangs', 'bat', 'square'];
+            params.teethStyle = styles[Math.floor(Math.random() * styles.length)];
+            
+            // Colores
+            const mouthColors = ['#ff2d55', '#e11d48', '#c0263f', '#f43f5e', '#be123c'];
+            params.mouthColor = mouthColors[Math.floor(Math.random() * mouthColors.length)];
+            
+            // Actualizar UI
+            updateSliderValues();
+            renderPreview();
+            
+            // Pequeño toast
+            showToast('Configuración aleatoria aplicada');
+        }
+        
+        function resetAll() {
+            params = {
+                mouthWidth: 380,
+                mouthHeight: 135,
+                lipThickness: 28,
+                upperCurve: 0.75,
+                lowerCurve: 1.05,
+                smile: 0,
+                mouthColor: '#ff2d55',
+                
+                teethCount: 8,
+                toothWidth: 34,
+                toothHeight: 52,
+                toothSpacing: 6,
+                teethY: 0,
+                teethColor: '#ffffff',
+                teethStyle: 'straight'
+            };
+            
+            updateSliderValues();
+            renderPreview();
+            
+            // reset preview mode
+            previewMode = 'ambos';
+            document.getElementById('mode-ambos').classList.add('active');
+            document.getElementById('mode-boca').classList.remove('active');
+            document.getElementById('mode-dientes').classList.remove('active');
+            document.getElementById('preview-label').textContent = 'AMBOS';
+            
+            showToast('Valores restablecidos');
+        }
+        
+        function initializeSliders() {
+            // Inicializar sliders con valores actuales
+            const sliders = ['mouthWidth', 'mouthHeight', 'lipThickness', 'upperCurve', 'lowerCurve', 'smile',
+                             'teethCount', 'toothWidth', 'toothHeight', 'toothSpacing', 'teethY'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                if (slider) {
+                    slider.oninput = function() {
+                        updateParams();
+                    };
+                }
+            });
+            
+            // Color pickers
+            const colors = ['mouthColor', 'teethColor'];
+            colors.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.oninput = function() {
+                        updateParams();
+                    };
+                }
+            });
+            
+            // Select
+            const styleSelect = document.getElementById('teethStyle');
+            if (styleSelect) styleSelect.onchange = updateParams;
+            
+            // Sincronizar valores iniciales
+            updateSliderValues();
+        }
+        
+        function initialize() {
+            // Setear valores por defecto en UI
+            updateSliderValues();
+            
+            // Render inicial
+            renderPreview();
+            
+            // Activar modo ambos
+            document.getElementById('mode-ambos').classList.add('active');
+            
+            // Inicializar listeners de sliders
+            initializeSliders();
+            
+            // Demo: mostrar un pequeño mensaje de ayuda al cargar
+            setTimeout(() => {
+                const previewCont = document.getElementById('preview-container');
+                previewCont.style.transition = 'box-shadow .4s';
+                
+                // Añadir tooltip sutil
+                const hint = document.createElement('div');
+                hint.style.cssText = 'position:absolute;bottom:12px;right:14px;font-size:0.67rem;background:rgba(255,255,255,.07);padding:3px 8px;border-radius:5px;color:#777;pointer-events:none;';
+                hint.textContent = 'Mueve los sliders';
+                previewCont.appendChild(hint);
+                
+                setTimeout(() => {
+                    if (hint && hint.parentNode) hint.parentNode.removeChild(hint);
+                }, 2600);
+            }, 1700);
+            
+            // Atajo de teclado: R = random, ESC = reset
+            document.addEventListener('keydown', function(e) {
+                if (e.key.toLowerCase() === 'r') {
+                    randomizeAll();
+                }
+                if (e.key === 'Escape') {
+                    resetAll();
+                }
+            });
+            
+            // Opcional: hacer que al cargar se vea un preset interesante
+            console.log('%c[Configurador Boca] Interfaz cargada. Listo para usar.', 'color:#555');
+        }
+        
+        // Boot
+        window.onload = function() {
+            initialize();
+        };
+        
+        // Exponer funciones útiles por si el cliente quiere usar desde consola
+        window.bocaConfig = {
+            getParams: () => params,
+            setParams: (newP) => { Object.assign(params, newP); updateSliderValues(); renderPreview(); },
+            exportBoca: () => exportSVG('boca'),
+            exportDientes: () => exportSVG('dientes'),
+            exportAmbos: () => exportSVG('ambos')
+        };
+    </script>
+</body>
+</html>
