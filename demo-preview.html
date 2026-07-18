@@ -1,159 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo • Configurador de Boca</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #0f0f11;
-            color: #ddd;
-            padding: 40px 20px;
-            margin: 0;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: #fff;
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 40px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-        .card {
-            background: #16161a;
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid #2a2a30;
-        }
-        .card h3 {
-            margin: 0 0 12px 0;
-            font-size: 1.05rem;
-            color: #ff2d55;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .svg-container {
-            background: #0a0a0c;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 260px;
-        }
-        .svg-container svg {
-            max-width: 100%;
-            max-height: 230px;
-            width: auto;
-            height: auto;
-        }
-        .label {
-            font-size: 0.75rem;
-            color: #666;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .btn {
-            display: inline-block;
-            background: #ff2d55;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 999px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: 30px;
-            text-align: center;
-        }
-        .btn:hover {
-            background: #ff446e;
-        }
-        .center {
-            text-align: center;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUCLE - Galería Demo v2 FIX</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0e0e10;color:#ddd;padding:32px 18px}
+.container{max-width:1260px;margin:0 auto}
+h1{font-family:'Space Grotesk';text-align:center;font-size:2rem;color:#fff;margin-bottom:6px}
+h1 span{color:#ff234e}
+.sub{text-align:center;color:#777;margin-bottom:26px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.card{background:#16161b;border:1px solid #2a2a32;border-radius:18px;padding:14px;transition:.15s}
+.card:hover{border-color:#3a3a46;transform:translateY(-2px)}
+.card h3{font-size:.92rem;margin-bottom:10px;color:#ff234e;display:flex;align-items:center;gap:6px}
+.box{background:#0a0a0c;border:1px solid #222;border-radius:14px;display:grid;place-items:center;min-height:250px;padding:10px}
+.box svg{max-width:100%;max-height:220px;width:auto;height:auto}
+.meta{margin-top:8px;font-size:.68rem;color:#666;display:flex;justify-content:space-between}
+.btn{margin:28px auto 0;display:block;background:#ff234e;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:700;width:fit-content}
+.btn:hover{background:#ff4d6d}
+.tag{font-size:.6rem;background:#222;border:1px solid #333;padding:2px 7px;border-radius:999px;color:#888}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Configurador de Boca</h1>
-        <p class="subtitle">Ejemplos de export SVG sólido (basados en los PNG y SVG del repo)</p>
+<div class="container">
+<h1><span>BUCLE</span> — Galería SVG sólida v2 FIX</h1>
+<p class="sub">Antes: fondo <code>rect</code> + 2 líneas blancas con <code>opacity 0.75 / 0.9</code> fake. Ahora: 100% <b>fill sólido</b>, clipPath real, sin strokes, export limpio.</p>
+<div class="grid" id="gallery"></div>
+<a href="boca-config.html" class="btn">→ Abrir configurador interactivo</a>
+<p style="text-align:center;margin-top:30px;color:#444;font-size:.8rem">Fixes aplicados:<br>• ClipPath para dientes dentro de la boca • Sin línea inferior falsa • Upper + Lower teeth • Cupid bow + corner sharp + wavy • 7 estilos dientes • Drag handles • LocalStorage • Export copiar SVG/PNG</p>
+</div>
+<script>
+const files = [
+  {file:'preview-default.svg', title:'DEFAULT • oval + sup/inf', tag:'AMBOS'},
+  {file:'preview-smile.svg', title:'SONRISA • ancha + pointed', tag:'SMILE'},
+  {file:'preview-open.svg', title:'ABIERTA • 200px apertura', tag:'OPEN'},
+  {file:'preview-fangs.svg', title:'COLMILLOS • fangs boost', tag:'FANGS'},
+  {file:'preview-bat.svg', title:'BATMAN • bat cúpula ref (boca y dientes.png)', tag:'BAT'},
+  {file:'preview-closed.svg', title:'CERRADA • slit 42px', tag:'CLOSED'},
+  {file:'preview-boca.svg', title:'SOLO BOCA • fill sólido', tag:'BOCA'},
+  {file:'preview-dientes.svg', title:'SOLO DIENTES • sin fondo', tag:'DIENTES'},
+  {file:'previews/default.svg', title:'/previews default', tag:'PREVIEW'},
+  {file:'previews/smile.svg', title:'/previews smile', tag:'PREVIEW'},
+];
 
-        <div class="grid">
-            <!-- AMBOS -->
-            <div class="card">
-                <h3>🦷💋 AMBOS</h3>
-                <div class="svg-container">
-                    <svg width="620" height="460" viewBox="0 0 620 460" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100%" height="100%" fill="#0a0a0c"/>
-                        <path d="M 120.0 235 Q 224.5 133.75 310 127.75 Q 395.5 133.75 500.0 235 Q 414.5 376.75 310 382.75 Q 205.5 376.75 120.0 235 Z" fill="#ff2d55" />
-                        <path d="M 146.6 235 Q 228.3 165.1375 310 165.1375 Q 391.7 165.1375 473.4 235 Q 408.04 325.365625 310 325.365625 Q 211.95999999999998 325.365625 146.6 235 Z" fill="#111111" />
-                        <path d="M 153.0 247 L 187.0 247 L 187.0 292 Q 187.0 299 180.0 299 L 160.0 299 Q 153.0 299 153.0 292 Z" fill="#ffffff" />
-                        <path d="M 193.0 247 L 227.0 247 L 227.0 292 Q 227.0 299 220.0 299 L 200.0 299 Q 193.0 299 193.0 292 Z" fill="#ffffff" />
-                        <path d="M 233.0 247 L 267.0 247 L 267.0 292 Q 267.0 299 260.0 299 L 240.0 299 Q 233.0 299 233.0 292 Z" fill="#ffffff" />
-                        <path d="M 273.0 247 L 307.0 247 L 307.0 292 Q 307.0 299 300.0 299 L 280.0 299 Q 273.0 299 273.0 292 Z" fill="#ffffff" />
-                        <path d="M 313.0 247 L 347.0 247 L 347.0 292 Q 347.0 299 340.0 299 L 320.0 299 Q 313.0 299 313.0 292 Z" fill="#ffffff" />
-                        <path d="M 353.0 247 L 387.0 247 L 387.0 292 Q 387.0 299 380.0 299 L 360.0 299 Q 353.0 299 353.0 292 Z" fill="#ffffff" />
-                        <path d="M 393.0 247 L 427.0 247 L 427.0 292 Q 427.0 299 420.0 299 L 400.0 299 Q 393.0 299 393.0 292 Z" fill="#ffffff" />
-                        <path d="M 433.0 247 L 467.0 247 L 467.0 292 Q 467.0 299 460.0 299 L 440.0 299 Q 433.0 299 433.0 292 Z" fill="#ffffff" />
-                    </svg>
-                </div>
-                <div class="label">BOCA + DIENTES (export combinado)</div>
-            </div>
-
-            <!-- BOCA -->
-            <div class="card">
-                <h3>💋 BOCA</h3>
-                <div class="svg-container">
-                    <svg width="620" height="460" viewBox="0 0 620 460" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100%" height="100%" fill="#0a0a0c"/>
-                        <path d="M 120.0 235 Q 224.5 133.75 310 127.75 Q 395.5 133.75 500.0 235 Q 414.5 376.75 310 382.75 Q 205.5 376.75 120.0 235 Z" fill="#ff2d55" />
-                        <path d="M 146.6 235 Q 228.3 165.1375 310 165.1375 Q 391.7 165.1375 473.4 235 Q 408.04 325.365625 310 325.365625 Q 211.95999999999998 325.365625 146.6 235 Z" fill="#111111" />
-                    </svg>
-                </div>
-                <div class="label">Solo boca / labios (sólido)</div>
-            </div>
-
-            <!-- DIENTES -->
-            <div class="card">
-                <h3>🦷 DIENTES</h3>
-                <div class="svg-container">
-                    <svg width="620" height="460" viewBox="0 0 620 460" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100%" height="100%" fill="#0a0a0c"/>
-                        <path d="M 153.0 247 L 187.0 247 L 187.0 292 Q 187.0 299 180.0 299 L 160.0 299 Q 153.0 299 153.0 292 Z" fill="#ffffff" />
-                        <path d="M 193.0 247 L 227.0 247 L 227.0 292 Q 227.0 299 220.0 299 L 200.0 299 Q 193.0 299 193.0 292 Z" fill="#ffffff" />
-                        <path d="M 233.0 247 L 267.0 247 L 267.0 292 Q 267.0 299 260.0 299 L 240.0 299 Q 233.0 299 233.0 292 Z" fill="#ffffff" />
-                        <path d="M 273.0 247 L 307.0 247 L 307.0 292 Q 307.0 299 300.0 299 L 280.0 299 Q 273.0 299 273.0 292 Z" fill="#ffffff" />
-                        <path d="M 313.0 247 L 347.0 247 L 347.0 292 Q 347.0 299 340.0 299 L 320.0 299 Q 313.0 299 313.0 292 Z" fill="#ffffff" />
-                        <path d="M 353.0 247 L 387.0 247 L 387.0 292 Q 387.0 299 380.0 299 L 360.0 299 Q 353.0 299 353.0 292 Z" fill="#ffffff" />
-                        <path d="M 393.0 247 L 427.0 247 L 427.0 292 Q 427.0 299 420.0 299 L 400.0 299 Q 393.0 299 393.0 292 Z" fill="#ffffff" />
-                        <path d="M 433.0 247 L 467.0 247 L 467.0 292 Q 467.0 299 460.0 299 L 440.0 299 Q 433.0 299 433.0 292 Z" fill="#ffffff" />
-                    </svg>
-                </div>
-                <div class="label">Solo dientes (sólido)</div>
-            </div>
-        </div>
-
-        <div class="center">
-            <a href="boca-config.html" class="btn">→ Abrir interfaz interactiva completa</a>
-        </div>
-
-        <p style="text-align:center; margin-top: 40px; font-size:0.85rem; color:#555;">
-            Abre <strong>boca-config.html</strong> para configurar con sliders y exportar los 3 SVGs.
-        </p>
-    </div>
+async function load(){
+  const g=document.getElementById('gallery');
+  for(const f of files){
+    try{
+      const txt=await fetch(f.file).then(r=> r.ok? r.text(): Promise.reject());
+      const c=document.createElement('div'); c.className='card';
+      c.innerHTML=`<h3>${f.title} <span class="tag">${f.tag}</span></h3><div class="box">${txt}</div><div class="meta"><span>${f.file}</span><span>sólido ✓</span></div>`;
+      g.appendChild(c);
+    }catch(e){
+      console.warn('fail', f.file);
+    }
+  }
+}
+load();
+</script>
 </body>
 </html>
