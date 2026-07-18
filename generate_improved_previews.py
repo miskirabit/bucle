@@ -1,269 +1,182 @@
 #!/usr/bin/env python3
 """
-Improved boca configurator preview generator.
-Generates accurate SVG + PNG using the fixed mouth/teeth logic.
-Uses ImageMagick (convert) for reliable PNG rendering.
+BUCLE - Generador de previews v2 FIX
+Fixes del agente anterior:
+- Eliminado fondo rect + 2 strokes falsos con opacity 0.75 / 0.9 (línea inferior)
+- Añadido clipPath real para dientes dentro de boca
+- Soporte upper + lower teeth
+- Cupid bow, corner sharp, wavy, skew
+- Estilos sólidos (fill only)
 """
 
-import math
-import subprocess
-import os
-import tempfile
+import os, math
 
-def generate_mouth_path(cx, cy, w, h, lip_thick, upper_c, lower_c, smile):
-    half_w = w / 2.0
-    smile_factor = smile / 75.0
-    thickness = max(10.0, lip_thick)
+CX, CY = 310, 235
 
-    # OUTER LIP (red)
-    outer_top_y = cy - (h * upper_c) + (smile_factor * 14)
-    outer_bottom_y = cy + (h * lower_c) + (smile_factor * -18)
+def clamp(v, mn, mx): return max(mn, min(mx, v))
 
-    outer_left = cx - half_w
-    outer_right = cx + half_w
-
-    outer_top_ctrl_x1 = cx - half_w * 0.52
-    outer_top_ctrl_y1 = cy - (h * upper_c * 1.08) + smile * 0.28
-    outer_top_ctrl_x2 = cx + half_w * 0.52
-    outer_top_ctrl_y2 = outer_top_ctrl_y1
-
-    outer_bot_ctrl_x1 = cx - half_w * 0.58
-    outer_bot_ctrl_y1 = cy + (h * lower_c * 1.02) + smile * -0.38
-    outer_bot_ctrl_x2 = cx + half_w * 0.58
-    outer_bot_ctrl_y2 = outer_bot_ctrl_y1
+def generate_mouth_paths(p):
+    halfW = p['mouthWidth']/2
+    leftX = CX - halfW
+    rightX = CX + halfW
+    leftY = CY + p['smile']
+    rightY = CY + p['smile'] + p['skew']*0.25
+    topHalf = p['mouthHeight']*p['upperCurve']*0.86
+    bottomHalf = p['mouthHeight']*p['lowerCurve']*0.86
+    topY = CY - topHalf
+    bottomY = CY + bottomHalf
+    cupid = p['cupidBow']
+    peakY = topY - 2
+    dipY = topY + cupid
+    leftPeakX = CX - p['mouthWidth']*0.20 + p['skew']*0.05
+    rightPeakX = CX + p['mouthWidth']*0.20 + p['skew']*0.08
+    dipX = CX + p['skew']*0.22
+    corner = p['cornerSharp']
+    wavy = p['wavy']
 
     outer = (
-        f"M {outer_left:.1f} {cy} "
-        f"Q {outer_top_ctrl_x1:.1f} {outer_top_y:.1f} {cx} {outer_top_y - 4:.1f} "
-        f"Q {outer_top_ctrl_x2:.1f} {outer_top_y:.1f} {outer_right:.1f} {cy} "
-        f"Q {outer_bot_ctrl_x2:.1f} {outer_bottom_y:.1f} {cx} {outer_bottom_y + 3:.1f} "
-        f"Q {outer_bot_ctrl_x1:.1f} {outer_bottom_y:.1f} {outer_left:.1f} {cy} Z"
+        f"M {leftX:.2f} {leftY:.2f} "
+        f"C {(leftX+p['mouthWidth']*0.13*(1-corner*0.5)):.2f} {(topY-p['mouthHeight']*0.08):.2f} {(leftPeakX-p['mouthWidth']*0.07):.2f} {peakY:.2f} {leftPeakX:.2f} {peakY:.2f} "
+        f"C {(leftPeakX+18):.2f} {peakY:.2f} {(dipX-26):.2f} {dipY:.2f} {dipX:.2f} {dipY:.2f} "
+        f"C {(dipX+26):.2f} {dipY:.2f} {(rightPeakX-18):.2f} {peakY:.2f} {rightPeakX:.2f} {peakY:.2f} "
+        f"C {(rightPeakX+p['mouthWidth']*0.07):.2f} {peakY:.2f} {(rightX-p['mouthWidth']*0.13*(1-corner*0.5)):.2f} {(topY-p['mouthHeight']*0.08):.2f} {rightX:.2f} {rightY:.2f} "
+        f"C {(rightX-p['mouthWidth']*0.14):.2f} {(bottomY+wavy*0.22):.2f} {(CX+p['mouthWidth']*0.22+wavy*0.45+p['skew']*0.2):.2f} {(bottomY+wavy*0.32):.2f} {(CX+wavy*0.18+p['skew']*0.12):.2f} {bottomY:.2f} "
+        f"C {(CX-p['mouthWidth']*0.22+wavy*0.14-p['skew']*0.1):.2f} {(bottomY-wavy*0.18):.2f} {(leftX+p['mouthWidth']*0.14):.2f} {(bottomY-wavy*0.08):.2f} {leftX:.2f} {leftY:.2f} Z"
     )
 
-    # INNER (black opening)
-    inset = thickness * 0.75
-    inner_w = w * (0.82 - (thickness / 420.0))
-    inner_h = h * (0.68 - (thickness / 520.0))
-    inner_half = inner_w / 2.0
+    innerW = max(40, p['mouthWidth']-p['lipThickness']*2.2)
+    innerHalf = innerW/2
+    innerTopHalf = max(6, p['mouthHeight']*p['upperCurve']*0.46 - p['lipThickness']*0.18)
+    innerBottomHalf = max(6, p['mouthHeight']*p['lowerCurve']*0.46 - p['lipThickness']*0.12)
+    innerLeftX = CX-innerHalf
+    innerRightX = CX+innerHalf
+    innerLeftY = CY+p['smile']*0.35
+    innerRightY = CY+p['smile']*0.35+p['skew']*0.12
+    innerTopY = CY-innerTopHalf+p['smile']*0.12
+    innerBottomY = CY+innerBottomHalf+p['smile']*-0.10
 
-    inner_left = cx - inner_half
-    inner_right = cx + inner_half
+    minOpening = 3 if p['mouthHeight']<28 else 8
+    if innerBottomY-innerTopY < minOpening:
+        mid = (innerBottomY+innerTopY)/2
+        innerTopY = mid-minOpening/2
+        innerBottomY = mid+minOpening/2
 
-    inner_top = cy - (inner_h * upper_c) + (smile_factor * 8) + inset * 0.3
-    inner_bottom = cy + (inner_h * lower_c) + (smile_factor * -12) - inset * 0.5
+    innerCupid = cupid*0.42
+    innerPeakY = innerTopY-1
+    innerDipY = innerTopY+innerCupid
+    innerLeftPeakX = CX-innerW*0.20+p['skew']*0.03
+    innerRightPeakX = CX+innerW*0.20+p['skew']*0.05
+    innerDipX = CX+p['skew']*0.14
+    innerWavy = wavy*0.45
 
-    inner_top_ctrl_x1 = cx - inner_half * 0.48
-    inner_top_ctrl_y1 = inner_top + (inset * 0.15)
-    inner_top_ctrl_x2 = cx + inner_half * 0.48
-    inner_top_ctrl_y2 = inner_top_ctrl_y1
+    if p['mouthHeight']<52:
+        inner = (
+            f"M {innerLeftX:.2f} {((innerLeftY+innerRightY)/2):.2f} "
+            f"Q {(CX-innerW*0.1):.2f} {innerTopY:.2f} {CX:.2f} {innerTopY:.2f} "
+            f"Q {(CX+innerW*0.1):.2f} {innerTopY:.2f} {innerRightX:.2f} {((innerLeftY+innerRightY)/2):.2f} "
+            f"Q {(CX+innerW*0.1):.2f} {innerBottomY:.2f} {CX:.2f} {innerBottomY:.2f} "
+            f"Q {(CX-innerW*0.1):.2f} {innerBottomY:.2f} {innerLeftX:.2f} {((innerLeftY+innerRightY)/2):.2f} Z"
+        )
+    else:
+        inner = (
+            f"M {innerLeftX:.2f} {innerLeftY:.2f} "
+            f"C {(innerLeftX+innerW*0.15):.2f} {innerTopY:.2f} {(innerLeftPeakX-innerW*0.05):.2f} {innerPeakY:.2f} {innerLeftPeakX:.2f} {innerPeakY:.2f} "
+            f"C {(innerLeftPeakX+12):.2f} {innerPeakY:.2f} {(innerDipX-16):.2f} {innerDipY:.2f} {innerDipX:.2f} {innerDipY:.2f} "
+            f"C {(innerDipX+16):.2f} {innerDipY:.2f} {(innerRightPeakX-12):.2f} {innerPeakY:.2f} {innerRightPeakX:.2f} {innerPeakY:.2f} "
+            f"C {(innerRightPeakX+innerW*0.05):.2f} {innerPeakY:.2f} {(innerRightX-innerW*0.15):.2f} {innerTopY:.2f} {innerRightX:.2f} {innerRightY:.2f} "
+            f"C {(innerRightX-innerW*0.14):.2f} {(innerBottomY+innerWavy*0.2):.2f} {(CX+innerW*0.18):.2f} {innerBottomY:.2f} {CX:.2f} {innerBottomY:.2f} "
+            f"C {(CX-innerW*0.18):.2f} {innerBottomY:.2f} {(innerLeftX+innerW*0.14):.2f} {(innerBottomY+innerWavy*0.12):.2f} {innerLeftX:.2f} {innerLeftY:.2f} Z"
+        )
 
-    inner_bot_ctrl_x1 = cx - inner_half * 0.52
-    inner_bot_ctrl_y1 = inner_bottom - (inset * 0.2)
-    inner_bot_ctrl_x2 = cx + inner_half * 0.52
-    inner_bot_ctrl_y2 = inner_bot_ctrl_y1
+    bounds = {'left':innerLeftX,'right':innerRightX,'top':innerTopY,'bottom':innerBottomY,
+              'centerY':(innerTopY+innerBottomY)/2,'height':innerBottomY-innerTopY,'width':innerW,'cx':CX,'cy':CY}
+    return outer, inner, bounds
 
-    inner = (
-        f"M {inner_left:.1f} {cy} "
-        f"Q {inner_top_ctrl_x1:.1f} {inner_top:.1f} {cx} {inner_top:.1f} "
-        f"Q {inner_top_ctrl_x2:.1f} {inner_top:.1f} {inner_right:.1f} {cy} "
-        f"Q {inner_bot_ctrl_x2:.1f} {inner_bottom:.1f} {cx} {inner_bottom:.1f} "
-        f"Q {inner_bot_ctrl_x1:.1f} {inner_bottom:.1f} {inner_left:.1f} {cy} Z"
-    )
+def top_arch_y(x,b):
+    t=(x-b['cx'])/(b['width']/2); ct=clamp(t,-1,1)
+    cornerY=b['centerY']-b['height']*0.10
+    return b['top'] + (cornerY-b['top'])*ct*ct
 
-    inner_bounds = {
-        'left': inner_left,
-        'right': inner_right,
-        'top': inner_top,
-        'bottom': inner_bottom,
-        'center_y': (inner_top + inner_bottom) / 2,
-        'height': inner_bottom - inner_top
-    }
+def bottom_arch_y(x,b):
+    t=(x-b['cx'])/(b['width']/2); ct=clamp(t,-1,1)
+    cornerY=b['centerY']+b['height']*0.10
+    return b['bottom'] - (b['bottom']-cornerY)*ct*ct
 
-    return outer, inner, inner_bounds
+def tooth_path(x,baseY,w,h,style,is_lower,rnd=0.5):
+    r=min(7,w*0.26,abs(h)*0.28); hw=w/2
+    tipY=baseY-abs(h) if is_lower else baseY+abs(h)
+    tipX=x+(rnd-0.5)*w*0.08
+    if style=='square':
+        return f"M {x-hw:.1f} {baseY:.1f} L {x+hw:.1f} {baseY:.1f} L {x+hw:.1f} {tipY:.1f} L {x-hw:.1f} {tipY:.1f} Z"
+    if style=='pointed':
+        return f"M {x-hw:.1f} {baseY:.1f} L {x+hw:.1f} {baseY:.1f} L {tipX:.1f} {tipY:.1f} Z"
+    if style=='fangs':
+        side=hw*0.78
+        return f"M {x-side:.1f} {baseY:.1f} Q {x:.1f} {(baseY+tipY)/2 + (-6 if is_lower else 6)} {tipX:.1f} {tipY:.1f} Q {x:.1f} {(baseY+tipY)/2 + (-6 if is_lower else 6)} {x+side:.1f} {baseY:.1f} Z"
+    # rounded default
+    return f"M {x-hw:.1f} {baseY:.1f} L {x+hw:.1f} {baseY:.1f} L {x+hw:.1f} {tipY-r:.1f} Q {x+hw:.1f} {tipY:.1f} {x+hw-r:.1f} {tipY:.1f} L {x-hw+r:.1f} {tipY:.1f} Q {x-hw:.1f} {tipY:.1f} {x-hw:.1f} {tipY-r:.1f} Z"
 
-
-def generate_teeth(inner_bounds, count, tw, th, spacing, style, offset_y):
-    if not inner_bounds:
-        return [], None
-
-    mouth_w = inner_bounds['right'] - inner_bounds['left']
-    cx = (inner_bounds['left'] + inner_bounds['right']) / 2
-
-    scale = max(0.6, min(1.4, mouth_w / 310.0))
-    tooth_w = tw * scale
-    tooth_h = th * scale
-
-    total_w = (tooth_w + spacing) * count - spacing
-    start_x = cx - total_w / 2
-
-    base_y = inner_bounds['center_y'] + offset_y + (inner_bounds['height'] * 0.08)
-    teeth_bottom_line = base_y + tooth_h * 0.92
-
-    teeth = []
-    max_h = inner_bounds['bottom'] - base_y - 2
-
+def gen_teeth(bounds,count,w,h,spacing,offY,style,gap,irreg,fangBoost,is_lower):
+    if count<=0 or not bounds or bounds['height']<4: return []
+    total=count*w+(count-1)*spacing+(gap or 0)
+    start=bounds['cx']-total/2+w/2
+    out=[]
     for i in range(count):
-        x = start_x + i * (tooth_w + spacing) + (tooth_w / 2)
+        x=start+i*(w+spacing)
+        if gap>0:
+            if count%2==0:
+                if i>=count//2: x+=gap
+            else:
+                mid=count//2
+                if i==mid: x+=gap/2
+                elif i>mid: x+=gap
+        arch = bottom_arch_y(x,bounds) if is_lower else top_arch_y(x,bounds)
+        base = arch-2+offY if is_lower else arch+2+offY
+        rnd=0.5+math.sin(i*1.7+count*0.4)*0.5
+        finalH=h
+        if fangBoost>0 and (i in (0,count-1,1,count-2)):
+            is_edge=i in (0,count-1)
+            finalH*=1+fangBoost*(0.9 if is_edge else 0.6)
+        if irreg>0:
+            finalH*=1+(rnd-0.5)*irreg*0.7
+        out.append(tooth_path(x,base,w,finalH,style,is_lower,rnd))
+    return out
 
-        hmod = min(tooth_h, max_h)
-        wmod = tooth_w
-
-        if style == 'pointed':
-            hmod = min(hmod * (1 + (i % 2) * 0.18), max_h)
-            ty = base_y + hmod * 0.95
-            p = f"M {x - wmod/2:.1f} {base_y:.1f} L {x:.1f} {ty:.1f} L {x + wmod/2:.1f} {base_y:.1f} Z"
-        elif style == 'fangs':
-            if i in (0, count-1):
-                hmod = min(hmod * 1.42, max_h * 1.05)
-            elif i in (1, count-2):
-                hmod = min(hmod * 1.12, max_h)
-            ty = base_y + hmod * 0.96
-            side = wmod * 0.42
-            p = f"M {x - side:.1f} {base_y:.1f} L {x:.1f} {ty:.1f} L {x + side:.1f} {base_y:.1f} Z"
-        elif style == 'bat':
-            mod = math.sin(i * 1.25) * 0.28
-            hmod = min(hmod * (0.82 + mod), max_h)
-            wmod = tooth_w * (0.92 + math.cos(i * 0.9) * 0.14)
-            p1y = base_y + hmod * 0.38
-            p2y = base_y + hmod * 0.88
-            p = (f"M {x - wmod/2:.1f} {base_y:.1f} "
-                 f"Q {x - wmod/2.1:.1f} {p1y:.1f} {x - wmod * 0.12:.1f} {p2y:.1f} "
-                 f"Q {x:.1f} {p2y + 3:.1f} {x + wmod * 0.12:.1f} {p2y:.1f} "
-                 f"Q {x + wmod/2.1:.1f} {p1y:.1f} {x + wmod/2:.1f} {base_y:.1f} Z")
-        elif style == 'square':
-            wmod = tooth_w * 1.08
-            hmod = min(hmod * 0.82, max_h)
-            by = base_y + hmod
-            p = f"M {x - wmod/2:.1f} {base_y:.1f} L {x + wmod/2:.1f} {base_y:.1f} L {x + wmod/2:.1f} {by:.1f} L {x - wmod/2:.1f} {by:.1f} Z"
-        else:  # straight
-            hmod = min(hmod, max_h)
-            by = base_y + hmod
-            rnd = min(6.0, wmod * 0.18)
-            p = (f"M {x - wmod/2:.1f} {base_y:.1f} "
-                 f"L {x + wmod/2:.1f} {base_y:.1f} "
-                 f"L {x + wmod/2:.1f} {by - rnd:.1f} "
-                 f"Q {x + wmod/2:.1f} {by:.1f} {x + wmod/2 - rnd:.1f} {by:.1f} "
-                 f"L {x - wmod/2 + rnd:.1f} {by:.1f} "
-                 f"Q {x - wmod/2:.1f} {by:.1f} {x - wmod/2:.1f} {by - rnd:.1f} Z")
-        teeth.append(p.strip())
-
-    return teeth, teeth_bottom_line
-
-
-def build_svg(params, view_w=620, view_h=460):
-    cx, cy = 310, 235
-
-    outer, inner, bounds = generate_mouth_path(
-        cx, cy,
-        params['mouthWidth'], params['mouthHeight'],
-        params['lipThickness'],
-        params['upperCurve'], params['lowerCurve'],
-        params['smile']
-    )
-
-    teeth, teeth_bottom = generate_teeth(
-        bounds,
-        params['teethCount'],
-        params['toothWidth'], params['toothHeight'],
-        params['toothSpacing'],
-        params['teethStyle'],
-        params['teethY']
-    )
-
-    parts = [
-        f'<?xml version="1.0" encoding="UTF-8"?>\n',
-        f'<svg width="{view_w}" height="{view_h}" viewBox="0 0 {view_w} {view_h}" xmlns="http://www.w3.org/2000/svg">\n',
-        '  <rect width="100%" height="100%" fill="#0a0a0c"/>\n'
-    ]
-
-    if params.get('show_boca', True):
-        parts.append(f'  <path d="{outer}" fill="{params["mouthColor"]}"/>\n')
-        parts.append(f'  <path d="{inner}" fill="#111111"/>\n')
-
-    if params.get('show_teeth', True) and teeth:
-        for t in teeth:
-            parts.append(f'  <path d="{t}" fill="{params["teethColor"]}"/>\n')
-
-        if teeth_bottom and bounds:
-            left = bounds['left'] + 8
-            right = bounds['right'] - 8
-            ly = teeth_bottom
-            parts.append(f'  <path d="M {left:.1f} {ly:.1f} Q {cx} {ly + 6:.1f} {right:.1f} {ly:.1f}" fill="none" stroke="#f8f8f8" stroke-width="3.5" opacity="0.75"/>\n')
-            parts.append(f'  <path d="M {left:.1f} {ly:.1f} Q {cx} {ly + 3:.1f} {right:.1f} {ly:.1f}" fill="none" stroke="#ddd" stroke-width="1.8" opacity="0.9"/>\n')
-
-    parts.append('</svg>')
-    return ''.join(parts)
-
-
-def render_svg_to_png(svg_str, png_path, width=620):
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.svg', delete=False) as f:
-        f.write(svg_str)
-        svg_file = f.name
-
-    try:
-        # Use ImageMagick convert (reliable here)
-        cmd = [
-            'convert',
-            '-background', 'none',
-            '-density', '150',
-            svg_file,
-            '-resize', f'{width}x',
-            png_path
-        ]
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        if result.returncode != 0:
-            print("convert stderr:", result.stderr)
-            return False
-        return True
-    finally:
-        try:
-            os.unlink(svg_file)
-        except:
-            pass
-
-
-if __name__ == "__main__":
-    os.makedirs('/home/user/bucle/previews', exist_ok=True)
-
-    base = {
-        "mouthWidth": 380,
-        "mouthHeight": 135,
-        "lipThickness": 28,
-        "upperCurve": 0.75,
-        "lowerCurve": 1.05,
-        "smile": 0,
-        "mouthColor": "#ff2d55",
-        "teethCount": 8,
-        "toothWidth": 34,
-        "toothHeight": 52,
-        "toothSpacing": 6,
-        "teethY": 0,
-        "teethColor": "#ffffff",
-        "teethStyle": "straight",
-        "show_boca": True,
-        "show_teeth": True,
-    }
-
-    configs = [
-        ("default", base),
-        ("smile", {**base, "smile": 42, "mouthHeight": 105, "mouthWidth": 420, "teethCount": 9, "teethStyle": "pointed"}),
-        ("open", {**base, "mouthHeight": 195, "lipThickness": 22, "smile": -8, "teethStyle": "straight", "teethY": 4}),
-        ("fangs", {**base, "teethCount": 7, "teethStyle": "fangs", "teethY": 8, "toothHeight": 68, "smile": -10}),
-        ("bat", {**base, "teethCount": 10, "teethStyle": "bat", "mouthWidth": 395, "smile": 22}),
-        ("closed", {**base, "mouthHeight": 62, "lipThickness": 36, "smile": 12, "teethCount": 6}),
-    ]
-
-    for name, p in configs:
-        svg = build_svg(p)
-        svg_path = f"/home/user/bucle/previews/{name}.svg"
-        with open(svg_path, "w") as f:
-            f.write(svg)
-
-        png_path = f"/home/user/bucle/previews/{name}.png"
-        ok = render_svg_to_png(svg, png_path, width=620)
-        if ok:
-            print(f"✓ Generated {png_path}")
+def build_svg(p, typ='ambos'):
+    outer, inner, bounds = generate_mouth_paths(p)
+    upper = gen_teeth(bounds, p['upperCount'], p['upperToothWidth'], p['upperToothHeight'], p['upperSpacing'], p['upperY'], p['upperStyle'], p['upperGap'], p['upperIrregular'], p['upperFangBoost'], False)
+    lower = gen_teeth(bounds, p['lowerCount'], p['lowerToothWidth'], p['lowerToothHeight'], p['lowerSpacing'], p['lowerY'], p['lowerStyle'], 0, p['upperIrregular']*0.5, 0, True) if p['showLower'] else []
+    inner_svg=''
+    if typ in ('boca','ambos'):
+        inner_svg+=f'<path d="{outer}" fill="{p["mouthColor"]}"/>\n  <path d="{inner}" fill="{p["innerColor"]}"/>\n'
+    if typ in ('dientes','ambos'):
+        if typ=='ambos':
+            inner_svg+=f'  <clipPath id="c"><path d="{inner}"/></clipPath>\n  <g clip-path="url(#c)">\n'
         else:
-            print(f"✗ Failed to render {name}")
+            inner_svg+='  <g>\n'
+        for t in upper+lower:
+            inner_svg+=f'  <path d="{t}" fill="{p["teethColor"]}"/>\n'
+        inner_svg+='  </g>\n'
+    return f'<?xml version="1.0" encoding="UTF-8"?>\n<svg width="620" height="460" viewBox="0 0 620 460" xmlns="http://www.w3.org/2000/svg">\n  {inner_svg}</svg>'
 
-    print("\nPreviews saved to /home/user/bucle/previews/")
+if __name__=='__main__':
+    os.makedirs('previews', exist_ok=True)
+    defaults=dict(mouthWidth=400,mouthHeight=138,lipThickness=32,upperCurve=0.86,lowerCurve=1.08,cupidBow=14,cornerSharp=0.46,smile=2,wavy=12,skew=0,mouthColor='#ff234e',innerColor='#0b0b0c',upperCount=8,upperToothWidth=34,upperToothHeight=52,upperSpacing=6,upperY=0,upperGap=0,upperIrregular=0.06,upperFangBoost=0,upperStyle='rounded',showLower=True,lowerCount=6,lowerToothWidth=30,lowerToothHeight=36,lowerSpacing=5,lowerY=0,lowerStyle='rounded',teethColor='#ffffff')
+    configs=[
+        ("default", defaults),
+        ("smile", {**defaults, "smile":38, "mouthWidth":460, "mouthHeight":100, "upperStyle":"pointed", "upperCount":9}),
+        ("open", {**defaults, "mouthHeight":200, "mouthWidth":350, "lipThickness":22}),
+        ("fangs", {**defaults, "upperCount":7, "upperStyle":"fangs", "upperFangBoost":0.85}),
+        ("bat", {**defaults, "mouthWidth":480, "mouthHeight":164, "cupidBow":18, "upperCount":6, "upperToothWidth":42, "upperStyle":"bat", "lowerCount":7, "lowerStyle":"bat"}),
+        ("closed", {**defaults, "mouthHeight":42, "lipThickness":36, "upperCount":6, "showLower":False}),
+    ]
+    for name,p in configs:
+        svg=build_svg(p,'ambos')
+        open(f'previews/{name}.svg','w').write(svg)
+        open(f'preview-{name}.svg','w').write(svg)
+        print(f'✓ {name}')
+    # separate boca/dientes for default
+    open('preview-boca.svg','w').write(build_svg(defaults,'boca'))
+    open('preview-dientes.svg','w').write(build_svg(defaults,'dientes'))
+    open('preview-default.svg','w').write(build_svg(defaults,'ambos'))
+    print("done - sólidos, sin fake línea")
